@@ -4,7 +4,7 @@ Page({
  data: { completed: false },
  onLoad() {
   const state = tour.getState()
-  const completed = state.surface === 'complete' || state.phase === 'done' && state.outcome === 'completed'
+  const completed = state.phase === 'demo' && state.surface === 'complete' || state.phase === 'done' && state.outcome === 'completed'
   if (completed) tour.complete('completed')
   this.setData({ completed })
  },

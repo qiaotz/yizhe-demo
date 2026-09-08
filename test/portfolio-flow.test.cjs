@@ -173,6 +173,26 @@ test('exiting a guided step returns to overview once and preserves a resumable s
   assert.equal(tour.getState().surface, 'practice')
 })
 
+test('the actual showcase offers resume after leaving an unfinished walkthrough', async () => {
+  const { portfolio, guide, page } = await fixture()
+  portfolio.activate(guide.route('classroom').url)
+  guide.exit('guide_exited')
+  const showcase = page('/pages/showcase/index')
+  showcase.onShow()
+  assert.equal(showcase.data.canResume, true)
+  assert.equal(showcase.data.completed, false, 'leaving the walkthrough is not completing it')
+})
+
+test('the actual completion receipt does not claim completion after an unfinished exit', async () => {
+  const { portfolio, guide, tour, page } = await fixture()
+  portfolio.activate(guide.route('classroom').url)
+  guide.exit('guide_exited')
+  const receipt = page('/pages/onboarding/index')
+  receipt.onLoad({ complete: '1' })
+  assert.equal(receipt.data.completed, false, 'a completion URL must not turn an exit into success')
+  assert.equal(tour.getState().outcome, 'guide_exited')
+})
+
 test('resume accepts only local surfaces and restart clears prior answer progress', async () => {
   const { portfolio, tour, wx, navigations } = await fixture()
   portfolio.activate('/pkg-question/wrong-case/index')

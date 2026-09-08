@@ -1,5 +1,6 @@
 import { defineConfig } from 'weapp-vite'
 import { transformH5VideoRuntime } from './h5-video-compat.mjs'
+import { transformPortfolioTabBarRuntime } from './portfolio-asset-compat.mjs'
 
 // Relative assets make one build portable to GitHub Pages and any static subfolder.
 const STATIC_BASE = process.env.DEMO_BASE || './'
@@ -59,6 +60,8 @@ function portfolioSourceCompat() {
       const normalized = id.replace(/\\/g, '/')
       const video = transformH5VideoRuntime(code, normalized)
       if (video) return video
+      const tabBar = transformPortfolioTabBarRuntime(code, normalized)
+      if (tabBar) return tabBar
       if (!normalized.includes('/src/')) return null
       let next = code
       if (/\.[cm]?[jt]sx?$/.test(normalized)) {

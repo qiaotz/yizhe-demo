@@ -4,7 +4,7 @@ const tour = require('../../services/product-tour')
 Page({
   data: { canResume: false, completed: false, showDetails: false },
   onShow() {
-    this.setData({ canResume: Boolean(wx.getStorageSync(demo.RESUME_KEY)), completed: tour.getState().phase === 'done' })
+    this.setData({ canResume: Boolean(wx.getStorageSync(demo.RESUME_KEY)), completed: tour.getState().phase === 'done' && tour.getState().outcome === 'completed' })
   },
   start() { demo.start() },
   resume() { demo.resume() },

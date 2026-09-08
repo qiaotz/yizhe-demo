@@ -2,6 +2,15 @@ export const STORAGE_PREFIX = 'yizhe-portfolio:v1:'
 const RUNTIME_STORAGE_PREFIX = '__weapp_vite_web_storage__:'
 const forbiddenIdentityKey = key => /token|session|openid|unionid|clientid|authorization|invite|pilot/i.test(String(key))
 
+export function resolvePortfolioAssetUrl(value, documentUrl) {
+  if (!value || typeof value !== 'string') return value
+  // The exported demo owns images relative to its document, even when inherited
+  // mini-program configuration still contains an old root or /beta/ prefix.
+  const relative = value.replace(/^\/(?:beta\/)?images\//, './images/')
+  if (!documentUrl) return relative
+  try { return new URL(relative, documentUrl).href } catch { return relative }
+}
+
 function callback(options, name, value) {
   if (typeof options?.[name] === 'function') options[name](value)
 }
