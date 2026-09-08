@@ -98,6 +98,17 @@ function portfolioHostPrelude() {
 
 export default defineConfig({
   base: STATIC_BASE,
+  // weapp-vite merges its top-level build defaults before web.vite settings.
+  // Override the mini-program-style fixed entry name at this level for H5.
+  build: {
+    rolldownOptions: {
+      output: {
+        format: 'es',
+        entryFileNames: '[name]-[hash].js',
+        chunkFileNames: '[name]-[hash].js',
+      },
+    },
+  },
   weapp: {
     srcRoot: 'src',
     web: {
@@ -105,7 +116,6 @@ export default defineConfig({
       outDir: 'dist/web',
       vite: {
         plugins: [h5ButtonRuntimeParity(), portfolioSourceCompat(), portfolioHostPrelude()],
-        build: { rolldownOptions: { output: { format: 'es' } } },
       },
       pluginOptions: {
         runtime: {

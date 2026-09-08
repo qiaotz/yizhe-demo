@@ -18,6 +18,14 @@ assert.match(html, /media-src 'none'/, 'Static demo must reject remote media')
 if (!process.env.DEMO_BASE || process.env.DEMO_BASE === './') {
   assert.doesNotMatch(html, /(?:src|href)="\/(?!\/)/, 'Built entry assets must be relative')
 }
+const scriptNames = [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*>/g)]
+  .map(match => path.posix.basename(new URL(match[1], 'https://demo.invalid/').pathname))
+assert.ok(scriptNames.length > 0, 'Built entry must reference a JavaScript bundle')
+for (const name of scriptNames) {
+  assert.match(name, /^.+-[A-Za-z0-9_-]{8,}\.js$/, 'JavaScript entry names must contain a content hash')
+  assert.ok(files.includes(path.join(root, name)), `Missing referenced JavaScript entry: ${name}`)
+}
+assert.ok(!files.includes(path.join(root, 'index.js')), 'Fixed index.js must not remain in the build')
 const forbidden = [
   /https?:\/\/[^\s'"<>]*tcloudbase\.com/i,
   /cloud:\/\/[^\s'"<>]+/i,
@@ -30,4 +38,4 @@ for (const file of files.filter(file => /\.(?:js|css|html|json)$/.test(file))) {
   for (const pattern of forbidden) assert.doesNotMatch(content, pattern, `Forbidden private configuration in ${path.relative(root, file)}`)
 }
 const bytes = (await Promise.all(files.map(file => stat(file)))).reduce((sum, info) => sum + info.size, 0)
-console.log(`Static demo verified: ${files.length} files, ${(bytes / 1024 / 1024).toFixed(2)} MiB; API and media denied.`)
+console.log(`Static demo verified: ${files.length} files, ${(bytes / 1024 / 1024).toFixed(2)} MiB; API and media denied; entry ${scriptNames.join(', ')}.`)
