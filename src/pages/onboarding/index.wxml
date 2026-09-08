@@ -1,0 +1,10 @@
+<yy-nav theme="v3" title="{{completed ? '体验完成' : '学习流程'}}" back="true"/>
+<view class="portfolio-receipt">
+ <view class="receipt-mark">{{completed ? '✓' : '↗'}}</view>
+ <view class="receipt-heading">{{completed ? '把这轮学习，连起来了。' : '走过一轮完整学习。'}}</view>
+ <view class="receipt-intro">从找到重点，到理解知识、验证运用，再到找到错因和主动回忆，每一步都为下一步提供线索。</view>
+ <view class="receipt-steps"><view><text>预习</text><text>发现已有理解与盲点</text></view><view><text>上课</text><text>建立结构化的判断思路</text></view><view><text>做题</text><text>用题目检验知识运用</text></view><view><text>改错</text><text>核对 AI 示例并完善复盘</text></view><view><text>复习</text><text>通过重做与回忆再次验证</text></view></view>
+ <view class="receipt-note">本次使用示例内容与预置 AI 回答。进度仅保存在当前浏览器。</view>
+ <yy-button theme="v3" bind:tap="restart">重新体验</yy-button>
+ <yy-button theme="v3" tone="text" bind:tap="home">返回项目介绍</yy-button>
+</view>

@@ -1,0 +1,8 @@
+<view class="nav-root">
+  <view class="nav-spacer theme-{{theme}}" style="height:calc({{barHeight}}px + max({{statusBarHeight}}px, env(safe-area-inset-top)));\"></view>
+  <view class="nav theme-{{theme}} stage-{{stage}} {{transparent ? 'transparent' : ''}} {{hideStageDot ? 'no-stage-dot' : ''}}" style="padding-top:max({{statusBarHeight}}px, env(safe-area-inset-top));height:{{barHeight}}px;">
+    <view class="nav-side"><button wx:if="{{back}}" class="back" hover-class="back--pressed" hover-start-time="20" hover-stay-time="180" bindtap="goBack" aria-label="{{backText}}"><image src="/images/prototype/back.svg" />{{backText}}</button><slot name="left" /></view>
+    <view class="nav-title"><view wx:if="{{showStageDot}}" class="stage-dot" />{{title}}</view>
+    <view class="nav-side right" style="right:{{navRightInset}}px;top:max({{statusBarHeight}}px, env(safe-area-inset-top));height:{{barHeight}}px;"><slot name="right" /></view>
+  </view>
+</view>

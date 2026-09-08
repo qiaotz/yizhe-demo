@@ -1,0 +1,291 @@
+<yy-page-shell title="知识课堂" back backText="返回" hideAssistant="{{true}}" stage="class" kind="task" tabbar="{{false}}">
+  <yy-guide-coach wx:if="{{guideMode}}" eyebrow="{{guideCoach.eyebrow}}" title="{{guideCoach.title}}" desc="{{guideCoach.desc}}" answer="{{guideCoach.answer}}" bind:exit="exitGuide" />
+  <yy-state
+    wx:if="{{state !== 'ready'}}"
+    type="{{state === 'preview-required' || state === 'card-unavailable' ? 'unavailable' : state}}"
+    theme="v3"
+    title="{{state === 'preview-required' ? '请先完成预习' : state === 'card-unavailable' ? '学习内容已更新' : state === 'unavailable' ? '课堂内容暂未开放' : state === 'exam-unavailable' ? '考试方向暂未开放' : state === 'insufficient' ? '课堂配套题目不足' : ''}}"
+    desc="{{state === 'preview-required' ? '完成当前知识内容的预习检测后，即可进入课堂。' : state === 'card-unavailable' ? '当前内容不存在或已更新，请返回预习重新选择。' : state === 'unavailable' ? '服务端内容未达到公开发布条件，当前保持关闭。' : state === 'insufficient' ? '题目数量或审核状态未满足正式学习要求。' : ''}}"
+    actionText="{{state === 'preview-required' || state === 'card-unavailable' ? '返回预习' : state === 'auth' || state === 'network' || state === 'offline' || state === 'service' ? '重新加载' : ''}}"
+    bind:retry="retry"
+  />
+
+  <view wx:elif="{{activeLesson && activeUnit}}" class="classroom-body panel-{{aiPanelMode}}">
+    <view class="lesson-context">
+      <view class="context-topline">
+        <view class="context-line"><text>{{chapter.title}}</text><text class="context-divider">·</text><text>{{activeLesson.title}}</text></view>
+        <view class="unit-position" aria-label="当前第{{unitPosition.current}}项，共{{unitPosition.total}}项"><text>{{unitPosition.current}}</text><text>/ {{unitPosition.total}}</text></view>
+      </view>
+      <view class="knowledge-title">{{activeUnit.title}}</view>
+      <view class="knowledge-meta"><text>{{activeUnit.masteryState || '尚未形成掌握记录'}}</text></view>
+    </view>
+
+    <view class="video-card state-unavailable">
+      <view class="video-stage">
+        <view class="video-eyebrow">TEXT CLASSROOM</view>
+        <view class="video-title">本次演示使用图文课堂</view>
+        <view class="video-mark" aria-hidden="true">S{{unitPosition.current}}</view>
+        <view class="video-placeholder" aria-label="图文课堂演示">
+          <view class="placeholder-mark"><view /></view>
+          <text>下方知识卡、AI 示例解析和课堂微测均可操作。</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="content-document">
+      <block wx:for="{{contentSections}}" wx:key="key">
+        <view wx:if="{{item.detailStart}}" class="content-depth-intro">
+          <view class="content-depth-kicker">按需深入</view>
+          <view class="content-depth-title">先看每栏要点，再展开完整内容</view>
+          <text>遇到不理解的地方时，打开对应栏目继续往下学。</text>
+        </view>
+
+        <view wx:if="{{item.layout === 'core'}}" class="document-section core-section">
+          <view class="document-heading"><view class="heading-mark" /><text>{{item.label}}</text></view>
+          <view class="core-copy"><text selectable>{{item.content}}</text></view>
+        </view>
+
+        <view wx:elif="{{item.layout === 'comparison'}}" class="document-section comparison-section">
+          <view class="document-heading"><view class="heading-mark" /><text>{{item.label}}</text></view>
+          <view wx:if="{{item.comparisonRows.length}}" class="comparison-table">
+            <view wx:for="{{item.comparisonRows}}" wx:for-item="row" wx:key="id" class="comparison-row">
+              <view class="comparison-category">{{row.category}}</view>
+              <view class="comparison-copy">
+                <text wx:if="{{row.representativeCases}}">{{row.representativeCases}}</text>
+                <text wx:if="{{row.decisionKey}}" class="comparison-decision">{{row.decisionKey}}</text>
+              </view>
+            </view>
+          </view>
+          <text wx:else class="document-copy" selectable>{{item.content}}</text>
+        </view>
+
+        <view wx:elif="{{item.layout === 'accordion'}}" class="content-accordion {{item.expanded ? 'expanded' : ''}}">
+          <view
+            class="accordion-trigger"
+            aria-role="button"
+            data-key="{{item.key}}"
+            aria-label="{{item.label + (item.expanded ? '，已展开' : '，已折叠')}}"
+            aria-expanded="{{item.expanded}}"
+            hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="toggleContentSection"
+          >
+            <view class="accordion-index">{{item.detailIndex}}</view>
+            <view class="accordion-copy">
+              <view class="accordion-label">{{item.label}}</view>
+              <text class="accordion-purpose">{{item.purpose}}</text>
+              <text wx:if="{{!item.expanded && item.preview}}" class="accordion-preview">{{item.preview}}</text>
+            </view>
+            <view class="accordion-action" aria-hidden="true">
+              <text>{{item.expanded ? '收起' : '展开'}}</text>
+              <view class="accordion-chevron {{item.expanded ? 'expanded' : ''}}"><view /></view>
+            </view>
+          </view>
+          <view wx:if="{{item.expanded}}" class="accordion-body">
+            <text wx:if="{{item.kind === 'content'}}" class="document-copy" selectable>{{item.content}}</text>
+            <view wx:elif="{{item.kind === 'steps'}}" class="step-list">
+              <view wx:for="{{item.steps}}" wx:for-item="step" wx:key="id" class="step-row"><view class="step-index">{{step.index}}</view><view class="step-copy"><view wx:if="{{step.heading}}">{{step.heading}}</view><text>{{step.content}}</text></view></view>
+            </view>
+            <view wx:elif="{{item.kind === 'items'}}" class="item-list">
+              <view wx:for="{{item.items}}" wx:for-item="entry" wx:key="id" class="content-item"><view class="item-marker" /><view class="item-copy"><view wx:if="{{entry.heading}}">{{entry.heading}}</view><text>{{entry.content}}</text></view></view>
+            </view>
+          </view>
+        </view>
+
+        <view wx:elif="{{item.layout === 'case-preview'}}" class="case-spotlight {{item.expanded ? 'expanded' : ''}}">
+          <view class="case-spotlight-head">
+            <view class="case-spotlight-copy">
+              <view class="case-spotlight-kicker">临床推演</view>
+              <view class="case-spotlight-title">{{item.label}}</view>
+              <text>{{item.purpose}}</text>
+            </view>
+            <view wx:if="{{item.casePreview.caseCount}}" class="case-count">{{item.casePreview.caseCount}} 例</view>
+          </view>
+
+          <view wx:if="{{!item.expanded && item.casePreview}}" class="case-preview-body">
+            <view class="case-preview-context">
+              <view class="case-preview-sequence">CASE 01</view>
+              <view class="case-preview-heading">{{item.casePreview.heading}}</view>
+            </view>
+            <text wx:if="{{item.casePreview.scenario}}" class="case-preview-scenario">{{item.casePreview.scenario}}</text>
+
+            <view wx:if="{{item.casePreview.clues.length}}" class="case-preview-clue-block">
+              <view class="case-preview-label">先抓关键线索</view>
+              <view class="case-preview-clues">
+                <view wx:for="{{item.casePreview.clues}}" wx:for-item="clue" wx:for-index="clueIndex" wx:key="id" class="case-preview-clue">
+                  <view>{{clueIndex + 1}}</view><text>{{clue.clue}}</text>
+                </view>
+              </view>
+            </view>
+
+            <view wx:if="{{item.casePreview.decisions.length}}" class="case-preview-path">
+              <view class="case-preview-label">再沿决策路径判断</view>
+              <view wx:for="{{item.casePreview.decisions}}" wx:for-item="decision" wx:for-index="decisionIndex" wx:key="id" class="case-preview-decision">
+                <view class="case-preview-node">{{decision.step}}</view>
+                <text>{{decision.decision}}</text>
+                <view wx:if="{{decisionIndex < item.casePreview.decisions.length - 1}}" class="case-preview-link" />
+              </view>
+            </view>
+          </view>
+
+          <view wx:if="{{item.expanded}}" class="case-full-body">
+            <view class="item-list case-list">
+              <view wx:for="{{item.cases}}" wx:for-item="entry" wx:key="id" class="case-record">
+                <view class="case-record-head">
+                  <view class="case-sequence">CASE {{entry.index}}</view>
+                  <view class="case-title">{{entry.heading}}</view>
+                </view>
+
+                <view wx:if="{{entry.scenario}}" class="case-scenario">
+                  <view class="case-part-label">病例情境</view>
+                  <text selectable>{{entry.scenario}}</text>
+                </view>
+
+                <view wx:if="{{entry.clues.length}}" class="case-part">
+                  <view class="case-part-label">关键线索</view>
+                  <view class="case-clue-list">
+                    <view wx:for="{{entry.clues}}" wx:for-item="clue" wx:key="id" class="case-clue">
+                      <view class="case-clue-index">{{clue.index}}</view>
+                      <view class="case-clue-copy">
+                        <text selectable>{{clue.clue}}</text>
+                        <text wx:if="{{clue.significance}}" selectable class="case-clue-significance">为什么重要 · {{clue.significance}}</text>
+                      </view>
+                    </view>
+                  </view>
+                </view>
+
+                <view wx:if="{{entry.decisionChain.length}}" class="case-part">
+                  <view class="case-part-label">决策路径</view>
+                  <view class="case-decision-track">
+                    <view wx:for="{{entry.decisionChain}}" wx:for-item="decision" wx:key="id" class="case-decision-step">
+                      <view class="case-step-rail"><view class="case-step-node">{{decision.step}}</view><view wx:if="{{decision.index < entry.decisionChain.length}}" class="case-step-line" /></view>
+                      <view class="case-step-copy">
+                        <text selectable class="case-step-decision">{{decision.decision}}</text>
+                        <text wx:if="{{decision.basis}}" selectable class="case-step-basis">依据 · {{decision.basis}}</text>
+                      </view>
+                    </view>
+                  </view>
+                </view>
+
+                <view wx:if="{{entry.exclusions.length}}" class="case-part">
+                  <view class="case-part-label">鉴别与排除</view>
+                  <view class="case-exclusion-list">
+                    <view wx:for="{{entry.exclusions}}" wx:for-item="exclusion" wx:key="id" class="case-exclusion">
+                      <view class="case-exclusion-name">{{exclusion.alternative}}</view>
+                      <text wx:if="{{exclusion.reason}}" selectable>{{exclusion.reason}}</text>
+                    </view>
+                  </view>
+                </view>
+
+                <view wx:if="{{entry.examTraps.length}}" class="case-traps">
+                  <view class="case-part-label">考试陷阱</view>
+                  <view wx:for="{{entry.examTraps}}" wx:for-item="trap" wx:key="id" class="case-trap-row"><view class="case-trap-mark">!</view><text selectable>{{trap.content}}</text></view>
+                </view>
+
+                <view wx:if="{{entry.takeaway}}" class="case-takeaway">
+                  <view class="case-takeaway-label">迁移结论</view>
+                  <text selectable>{{entry.takeaway}}</text>
+                </view>
+
+                <text wx:if="{{!entry.structured}}" class="document-copy case-fallback" selectable>{{entry.content}}</text>
+              </view>
+            </view>
+          </view>
+
+          <view
+            class="case-expand-control"
+            aria-role="button"
+            aria-label="{{item.expanded ? '收起完整病例推演' : '展开完整病例推演'}}"
+            aria-expanded="{{item.expanded}}"
+            data-key="{{item.key}}"
+            hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="toggleContentSection"
+          >
+            <view class="case-expand-copy">
+              <view>{{item.expanded ? '收起完整病例推演' : '展开完整病例推演'}}</view>
+              <text wx:if="{{!item.expanded}}">查看完整线索、鉴别排除与考试陷阱</text>
+            </view>
+            <view class="case-expand-chevron {{item.expanded ? 'expanded' : ''}}" aria-hidden="true"><view /></view>
+          </view>
+        </view>
+
+        <view wx:elif="{{item.layout === 'summary'}}" class="document-section memory-summary">
+          <image class="memory-icon" src="/images/prototype/bookmark-memory.svg" mode="aspectFit" aria-hidden="true" />
+          <view class="memory-content">
+            <view class="summary-label">记忆小结</view>
+            <text wx:if="{{item.content}}" class="summary-copy" selectable>{{item.content}}</text>
+            <view wx:elif="{{item.items.length}}" class="summary-copy"><text wx:for="{{item.items}}" wx:for-item="entry" wx:key="id">{{entry.content}}{{index < item.items.length - 1 ? '；' : ''}}</text></view>
+          </view>
+        </view>
+      </block>
+
+      <view wx:if="{{evidenceEntries.length}}" class="source-disclosure">
+        <view class="accordion-trigger source-trigger" aria-role="button" aria-label="资料依据{{evidenceExpanded ? '，已展开' : '，已折叠'}}" aria-expanded="{{evidenceExpanded}}" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="toggleEvidence">
+          <view class="accordion-label"><text>资料依据 · {{evidenceEntries.length}} 条</text></view>
+          <view class="accordion-symbol" aria-hidden="true"><view class="accordion-symbol-line" /><view wx:if="{{!evidenceExpanded}}" class="accordion-symbol-line vertical" /></view>
+        </view>
+        <view wx:if="{{evidenceExpanded}}" class="evidence-list">
+          <view wx:for="{{evidenceEntries}}" wx:key="id" class="evidence-row">
+            <view class="evidence-index">{{index + 1}}</view>
+            <view class="evidence-copy"><view class="evidence-claim" selectable>{{item.claimText}}</view></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{!guideMode}}" class="card-note-entry" aria-role="button" aria-label="查看或编辑当前学习卡笔记" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="openCardNote">
+      <view class="card-note-icon"><image src="/images/prototype/note.svg" mode="aspectFit" /></view>
+      <view class="card-note-copy"><view class="card-note-title">本卡笔记</view><view class="card-note-sub">记录理解、疑问和记忆线索，与当前学习卡关联</view></view>
+      <view class="card-note-action">添加笔记</view>
+    </view>
+
+    <view class="micro-card">
+      <view class="section-head">
+        <view><view class="section-kicker">学习验证</view><view class="section-title">{{guideMode ? '1 题微测' : '3 题微测'}}</view></view>
+        <view class="micro-count yy-v3-number">{{microState === 'completed' ? microSession.questionCount + ' / ' + microSession.questionCount : microState === 'ready' && microSession ? microCurrentIndex + 1 + ' / ' + microSession.questionCount : microExpectedCount + ' 题'}}</view>
+      </view>
+
+      <view wx:if="{{microState === 'loading'}}" class="micro-state"><view class="state-spinner" /><text>正在准备正式微测…</text></view>
+      <view wx:elif="{{microState === 'locked' || microState === 'unavailable' || microState === 'error'}}" class="micro-state {{microState}}">
+        <view class="state-icon">{{microState === 'locked' ? '⌁' : '!'}}</view>
+        <view class="state-copy"><view>{{microState === 'locked' ? '微测尚未开放' : microState === 'unavailable' ? '微测题目暂不可用' : '微测加载失败'}}</view><text>{{microMessage}}</text></view>
+        <button wx:if="{{microState === 'error'}}" class="retry-button" hover-start-time="20" hover-stay-time="180" bindtap="retryMicro">重试</button>
+      </view>
+
+      <view wx:elif="{{microState === 'start' || microState === 'resume'}}" class="micro-entry">
+        <view class="entry-step">{{microState === 'resume' ? '未完成草稿已恢复' : '下一步'}}</view>
+        <view class="entry-title">{{microState === 'resume' ? '继续上次微测' : '开始 ' + microExpectedCount + ' 题微测'}}</view>
+        <view class="entry-desc">{{microMessage}}</view>
+        <button class="micro-primary" hover-start-time="20" hover-stay-time="180" bindtap="startOrContinueMicro">{{microState === 'resume' ? '继续微测' : '开始微测'}}</button>
+      </view>
+
+      <block wx:elif="{{microState === 'ready' && microCurrent}}">
+        <view class="question-dots">
+          <view wx:for="{{microSession.items}}" wx:key="id" class="question-dot {{index === microCurrentIndex ? 'active' : ''}} {{item.answered ? 'answered' : ''}} {{index > microReachedIndex ? 'future' : ''}}" aria-role="button" aria-label="第 {{index + 1}} 题{{index === microCurrentIndex ? '，当前题' : (item.answered ? '，已作答' : (index > microReachedIndex ? '，未到达' : ''))}}" data-index="{{index}}" aria-disabled="{{index > microReachedIndex}}" aria-current="{{index === microCurrentIndex}}" bindtap="jumpMicroQuestion">{{index + 1}}</view>
+        </view>
+        <view class="question-type">第 {{microCurrentIndex + 1}} / {{microSession.questionCount}} 题 · {{microCurrent.question.type === 'MULTIPLE' ? '多选题' : '单选题'}}</view>
+        <view class="question-stem">{{microCurrent.question.stem}}</view>
+        <view wx:for="{{microCurrent.question.options}}" wx:key="key" class="option-row {{item.selected ? 'selected' : ''}} {{guideMode && item.key === guideAnswerKey ? 'guide-answer-option' : ''}}" aria-role="button" aria-pressed="{{item.selected}}" aria-label="{{item.key}}，{{item.content}}{{guideMode && item.key === guideAnswerKey ? '，引导答案' : ''}}" data-key="{{item.key}}" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="selectMicroOption">
+          <view class="option-key">{{item.key}}</view><view class="option-content">{{item.content}}</view>
+          <view wx:if="{{guideMode && item.key === guideAnswerKey}}" class="guide-option-hint" aria-hidden="true">引导答案</view>
+        </view>
+        <view wx:if="{{microCurrent.answerDirty}}" class="answer-dirty-note">答案已修改，保存后再继续</view>
+        <button wx:if="{{!microCurrent.answered || microCurrent.answerDirty}}" class="micro-primary {{!microCurrent.selected.length || microSubmitting ? 'disabled' : ''}}" disabled="{{!microCurrent.selected.length || microSubmitting}}" aria-disabled="{{!microCurrent.selected.length || microSubmitting}}" aria-busy="{{microSubmitting}}" hover-start-time="20" hover-stay-time="180" bindtap="submitMicroAnswer">{{microSubmitting ? '提交中…' : (microCurrent.answered ? '保存修改' : '确认本题')}}</button>
+        <button wx:else class="micro-primary {{microSubmitting ? 'disabled' : ''}}" disabled="{{microSubmitting}}" aria-disabled="{{microSubmitting}}" aria-busy="{{microSubmitting}}" hover-start-time="20" hover-stay-time="180" bindtap="advanceMicro">{{microSubmitting ? '提交中…' : (microCurrentIndex < microSession.questionCount - 1 ? '下一题' : '提交全部答案')}}</button>
+        <view class="micro-hint">{{guideMode ? '提交前不展示答案与解析 · 本题仅用于体验' : '三题提交前不展示答案与解析 · 可返回已经到达的题目'}}</view>
+      </block>
+
+      <view wx:elif="{{microState === 'completed'}}" class="micro-result">
+        <view class="result-score"><text class="yy-v3-number">{{microSummary.correctCount}}</text><text>/ {{microSummary.questionCount}}</text></view>
+        <view class="result-copy"><view>{{microCanValidate ? '学习卡微测通过' : (microValidationUnavailable ? '学习卡微测已通过' : '本次尚未达到验证标准')}}</view><text>{{guideMode ? (microCanValidate ? '可以继续进入做题页面，检验自己会不会用刚学到的规律。' : '请按引导答案重新作答后继续。') : (microCanValidate ? '可以进入做题验证。' : (microValidationUnavailable ? '当前学习卡的 10 道做题验证题暂不可用，本次微测结果已保留。' : '答对至少 2 题后即可进入做题验证；本次结果已经记录。'))}}</text></view>
+      </view>
+      <view wx:if="{{microState === 'completed'}}" class="micro-result-list">
+        <view wx:for="{{microSession.items}}" wx:key="id" class="micro-result-row {{item.isCorrect ? 'correct' : 'wrong'}}"><view class="result-marker">{{index + 1}}</view><view>{{item.isCorrect ? '回答正确' : '需要再巩固'}}</view><text>你的答案 {{item.selectedText || '未作答'}}<text wx:if="{{!item.isCorrect}}"> · 正确答案 {{item.correctAnswerText}}</text></text></view>
+      </view>
+      <button wx:if="{{microState === 'completed' && microCanValidate}}" class="validation-button {{actionBusy ? 'disabled' : ''}}" disabled="{{actionBusy}}" aria-disabled="{{actionBusy}}" aria-busy="{{actionBusy}}" hover-start-time="20" hover-stay-time="180" bindtap="startValidation">{{actionBusy ? '正在创建练习…' : '进入做题验证'}}</button>
+      <button wx:if="{{microState === 'completed' && !microCanValidate && !microValidationUnavailable}}" class="micro-retry" hover-start-time="20" hover-stay-time="180" bindtap="restartMicroCheck">重新开始 {{microExpectedCount}} 题微测</button>
+      <view wx:if="{{microState === 'completed'}}" class="micro-hint">{{guideMode ? '本次结果不会计入你的学习记录。' : '进入资格由本次得分与服务端门禁共同确认。'}}</view>
+    </view>
+
+    <view wx:if="{{progressState === 'conflict'}}" class="inline-error">进度版本已变化，已重新加载服务端进度。</view>
+    <view wx:if="{{progressState === 'unavailable'}}" class="inline-error">当前学习卡内容已撤回或暂不可用。</view>
+  </view>
+  <yy-ai-assistant id="classroom-ai-assistant" wx:if="{{activeLesson && activeUnit && aiSnapshot && aiTargets.length}}" entryVariant="knowledge-card" stage="class" tabbar="{{false}}" contextSnapshot="{{aiSnapshot}}" targetOptions="{{aiTargets}}" targetLabel="{{aiTargetLabel}}" demoMode="{{guideMode}}" demoResponses="{{guideAiResponses}}" bind:panelstatechange="onAiPanelState" bind:demoanswercomplete="onGuideAiComplete" />
+</yy-page-shell>

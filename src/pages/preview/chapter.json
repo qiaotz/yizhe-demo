@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "章节概览",
+  "usingComponents": {
+    "yy-guide-coach": "/components/yy-guide-coach/index"
+  }
+}

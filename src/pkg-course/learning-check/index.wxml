@@ -1,0 +1,103 @@
+<yy-page-shell title="{{flowType === 'preview' ? '快速预习检测' : '关键节点微测'}}" back backText="{{flowType === 'preview' ? '退出' : '返回'}}" hideStageDot="{{flowType === 'preview'}}" assistantMode="context" hideAssistant="{{flowType === 'preview' || guideMode}}" stage="{{flowType === 'preview' ? 'preview' : 'class'}}" kind="{{flowType === 'preview' ? 'task' : (summary ? 'result' : 'task')}}" tabbar="{{false}}">
+  <view wx:if="{{flowType === 'preview'}}" slot="nav-right" class="preview-nav-count"><text>{{currentIndex + 1}}</text><view class="preview-nav-divider" />{{session.questionCount}}</view>
+  <yy-guide-coach wx:if="{{guideMode}}" eyebrow="{{guideCoach.eyebrow}}" title="{{guideCoach.title}}" desc="{{guideCoach.desc}}" answer="{{guideCoach.answer}}" bind:exit="exitGuide" />
+  <yy-state wx:if="{{state !== 'ready'}}" type="{{state}}" theme="v3" title="{{state === 'empty' ? '微测会话不存在' : ''}}" actionText="{{state === 'network' || state === 'offline' || state === 'service' ? '重新加载' : ''}}" bind:retry="retry" />
+
+  <view wx:elif="{{summary && flowType !== 'preview'}}" class="summary-card">
+    <view class="summary-eyebrow">本次学习证据</view>
+    <view class="summary-score yy-v3-number">{{summary.correctCount}} / {{summary.questionCount}}</view>
+    <view class="summary-title">关键节点微测已完成</view>
+    <view class="summary-desc">结果已作为学习证据记录，单次微测不会直接标记为已掌握。</view>
+    <view class="result-note">“去做题验证”只在服务端确认课时微测已完成后开放，并固定生成该课时的 10 道题。</view>
+    <yy-button wx:if="{{session.validation.available}}" theme="v3" disabled="{{submitting}}" bind:tap="goValidation">{{submitting ? '正在创建…' : '去做题验证（10题）'}}</yy-button>
+    <yy-button theme="v3" bind:tap="returnToClass">返回上课</yy-button>
+  </view>
+
+  <view wx:elif="{{flowType === 'preview'}}" class="prototype-preview-check {{summary ? 'completed' : ''}}">
+    <view class="question-index-strip prototype-index-strip">
+      <button wx:for="{{session.items}}" wx:key="id" class="question-index {{index === currentIndex ? 'active' : ''}} {{item.answered ? 'answered' : ''}}" data-index="{{index}}" hover-start-time="20" hover-stay-time="180" bindtap="jumpToQuestion">{{item.displayIndex}}</button>
+    </view>
+
+    <view wx:if="{{summary}}" class="preview-completion" aria-live="polite">
+      <view class="preview-completion-head">
+        <view class="preview-completion-check" aria-hidden="true">✓</view>
+        <view class="preview-completion-copy">
+          <view class="preview-completion-kicker">{{summary.questionCount}} 题已完成</view>
+          <view class="preview-completion-title">预习检测已完成</view>
+        </view>
+      </view>
+
+      <view class="preview-completion-summary">
+        <view class="preview-completion-score">
+          <text>本次答对</text>
+          <view><text class="yy-v3-number">{{summary.correctCount}}</text><text>/ {{summary.questionCount}}</text></view>
+        </view>
+        <view class="preview-completion-guidance">
+          <view>{{summary.guidanceTitle}}</view>
+          <text>{{summary.guidanceDescription}}</text>
+        </view>
+      </view>
+
+      <view class="preview-completion-note"><view aria-hidden="true">i</view><text>这不是最终成绩，只用来帮助你找到学习起点。</text></view>
+      <button class="preview-primary" hover-start-time="20" hover-stay-time="180" bindtap="goToClass">进入知识课堂</button>
+    </view>
+
+    <block wx:else>
+      <view wx:if="{{current}}" class="prototype-question-card">
+        <view class="prototype-question-type">{{current.question.type === 'MULTIPLE' ? '多选' : '单选'}} · {{session.chapter.name}}</view>
+        <view class="prototype-question-stem">{{current.question.stem}}</view>
+        <button wx:for="{{current.question.options}}" wx:key="key" class="prototype-option-row {{item.selected ? 'selected' : ''}} {{guideMode && item.key === guideAnswerKey ? 'guide-answer-option' : ''}}" data-key="{{item.key}}" aria-pressed="{{item.selected}}" aria-label="{{item.key}}，{{item.content}}{{guideMode && item.key === guideAnswerKey ? '，引导答案' : ''}}" hover-start-time="20" hover-stay-time="180" bindtap="selectOption">
+          <view class="prototype-option-key">{{item.key}}</view><view class="prototype-option-content">{{item.content}}</view>
+          <view wx:if="{{guideMode && item.key === guideAnswerKey}}" class="guide-option-hint" aria-hidden="true">引导答案</view>
+        </button>
+      </view>
+
+      <view class="preview-actions prototype-preview-actions {{guideMode ? 'guide-single-action' : ''}}">
+        <button wx:if="{{!guideMode}}" class="skip" disabled="{{submitting}}" hover-start-time="20" hover-stay-time="180" bindtap="skipPreview">跳过</button>
+        <button class="primary" disabled="{{(!current.selected.length && !current.answered) || submitting}}" hover-start-time="20" hover-stay-time="180" bindtap="advancePreview">{{submitting ? '保存中…' : (currentIndex === session.questionCount - 1 ? '提交' : '下一题')}}</button>
+      </view>
+      <view class="preview-hint">提交前不展示答案结论 · 答案可返回修改</view>
+    </block>
+  </view>
+
+  <view wx:else class="learning-flow">
+    <view class="check-top">
+      <view class="check-copy"><view class="check-kicker">{{session.lesson.title}}</view><view class="check-count">第 <text class="yy-v3-number">{{currentIndex + 1}} / {{session.questionCount}}</text> 题</view></view>
+      <button class="pause-button" hover-start-time="20" hover-stay-time="180" bindtap="pause">暂停</button>
+    </view>
+    <view class="question-index-strip">
+      <button wx:for="{{session.items}}" wx:key="id" class="question-index {{index === currentIndex ? 'active' : ''}} {{item.answered ? 'answered' : ''}}" data-index="{{index}}" hover-start-time="20" hover-stay-time="180" bindtap="jumpToQuestion">{{item.displayIndex}}</button>
+    </view>
+    <view class="check-progress"><view style="width: {{session.answeredCount / session.questionCount * 100}}%;" /></view>
+
+    <view wx:if="{{current}}" class="question-card">
+      <view class="question-type">{{current.question.type === 'MULTIPLE' ? '多选题' : '单选题'}} · {{session.lesson.title}}</view>
+      <view class="question-stem">{{current.question.stem}}</view>
+      <button wx:for="{{current.question.options}}" wx:key="key" class="option-row {{item.selected ? 'selected' : ''}} {{item.correct ? 'correct' : ''}}" data-key="{{item.key}}" hover-start-time="20" hover-stay-time="180" bindtap="selectOption">
+        <view class="option-key">{{item.key}}</view><view class="option-content">{{item.content}}</view>
+      </button>
+
+      <view wx:if="{{current.answered}}" class="answer-panel {{current.isCorrect ? 'correct-panel' : 'wrong-panel'}}">
+        <view class="answer-result">{{current.isCorrect ? '回答正确' : '回答错误'}}</view>
+        <view class="answer-key">正确答案：{{current.correctAnswerText}}</view>
+        <view class="explanation">{{current.explanation || '当前题目暂无解析'}}</view>
+      </view>
+    </view>
+
+    <view class="check-actions">
+      <button wx:if="{{currentIndex > 0}}" class="secondary" bindtap="previousQuestion">上一题</button>
+      <button wx:if="{{!current.answered}}" class="primary" disabled="{{!current.selected.length || submitting}}" hover-start-time="20" hover-stay-time="180" bindtap="submitAnswer">{{submitting ? '提交中…' : '提交答案'}}</button>
+      <button wx:elif="{{currentIndex < session.questionCount - 1}}" class="primary" hover-start-time="20" hover-stay-time="180" bindtap="nextQuestion">下一题</button>
+      <button wx:else class="primary" disabled="{{session.answeredCount !== session.questionCount || submitting}}" hover-start-time="20" hover-stay-time="180" bindtap="complete">{{submitting ? '提交中…' : '完成微测'}}</button>
+    </view>
+
+    <block>
+      <view class="answer-feedback"><text class="feedback-label">反馈：</text><text>{{current.answered ? (current.isCorrect ? '本题回答正确' : '这一部分需要回看') : '请选择选项继续'}}</text><text class="feedback-hint">作答后可使用 1 次提示</text></view>
+      <view class="validation-card">
+        <view class="validation-head"><view class="validation-title">微型验证</view><text class="validation-status">{{session.validation.available ? '已开放' : '未开放'}}</text></view>
+        <view class="validation-copy">验证资格由服务端学习证据判定；当前未返回资格时保持关闭。</view>
+        <button class="validation-button" disabled="{{!session.validation.available || submitting}}" hover-start-time="20" hover-stay-time="180" bindtap="goValidation">{{submitting ? '正在创建…' : '去做题验证'}}</button>
+      </view>
+    </block>
+  </view>
+</yy-page-shell>

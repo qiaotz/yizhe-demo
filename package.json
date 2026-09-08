@@ -1,0 +1,18 @@
+{
+  "name": "yizhe-portfolio-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.18.0 <23" },
+  "scripts": {
+    "build": "wv build -p web && node scripts/check-build.mjs",
+    "preview": "vite preview --outDir dist/web --host 127.0.0.1 --port 4173",
+    "test": "node --test test/*.test.mjs test/*.test.cjs",
+    "check:build": "node scripts/check-build.mjs"
+  },
+  "devDependencies": {
+    "@weapp-vite/web": "1.4.16",
+    "vite": "8.2.2",
+    "weapp-vite": "6.25.1"
+  }
+}

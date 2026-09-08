@@ -1,0 +1,32 @@
+<view
+  wx:if="{{ready}}"
+  class="free-query-fab {{dragging ? 'is-dragging' : ''}}"
+  style="top:{{renderTopPx}}px;"
+  aria-role="button"
+  role="button"
+  tabindex="0"
+  aria-label="{{ariaLabel}}"
+  hover-class="free-query-fab--pressed"
+  hover-start-time="20"
+  hover-stay-time="120"
+  bindpointerdown="handlePointerStart"
+  catchpointermove="handlePointerMove"
+  bindpointerup="handlePointerEnd"
+  bindpointercancel="handlePointerCancel"
+  bindmousedown="handleMouseStart"
+  bindtouchstart="handleTouchStart"
+  catchtouchmove="handleTouchMove"
+  bindtouchend="handleTouchEnd"
+  bindtouchcancel="handleTouchCancel"
+  bindkeydown="handleKeyDown"
+  bindtap="openFreeQuery"
+>
+  <view class="free-query-fab__halo" aria-hidden="true" />
+  <view class="free-query-fab__ear ear-left" aria-hidden="true" />
+  <view class="free-query-fab__ear ear-right" aria-hidden="true" />
+  <view class="free-query-fab__bot" aria-hidden="true">
+    <view class="free-query-fab__antenna"><view /></view>
+    <view class="free-query-fab__eyes"><view /><view /></view>
+    <text>AI</text>
+  </view>
+</view>

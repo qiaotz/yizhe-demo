@@ -1,0 +1,26 @@
+.state { display: flex; min-height: 480rpx; box-sizing: border-box; flex-direction: column; align-items: center; justify-content: center; padding: 52rpx 32rpx; text-align: center; }
+.state.compact { min-height: 260rpx; padding: 32rpx 20rpx; }
+.state-symbol { display: flex; width: 112rpx; height: 112rpx; align-items: center; justify-content: center; border-radius: 36rpx; color: #2F63D6; background: #EDF4FF; }
+.state-icon { width: 52rpx; height: 52rpx; }
+.state-spinner { width: 34rpx; height: 34rpx; box-sizing: border-box; border: 3rpx solid rgba(137,151,168,.28); border-top-color: var(--yy-v3-stage, #45A3FF); border-radius: 50%; animation: state-spin .8s linear infinite; }
+@keyframes state-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .state-spinner { animation-duration: 2.4s; } }
+.state-symbol.network, .state-symbol.offline, .state-symbol.service { color: #BD4F17; background: #FFF1E7; }
+.state-symbol.auth { color: #6A52B7; background: #F2EFFF; }
+.state-title { margin-top: 25rpx; color: #1D3153; font-size: 31rpx; font-weight: 800; }
+.state-desc { max-width: 560rpx; margin: 12rpx 0 28rpx; color: #64718A; font-size: 24rpx; line-height: 1.55; }
+.state-action { width: 100%; max-width: 360rpx; }
+.state.theme-v3 { min-height: 440rpx; color: var(--yy-v3-text, #F2F5F8); }
+.state.theme-v3.compact { min-height: 260rpx; padding: 32rpx 20rpx; }
+.state.theme-v3 .state-symbol { width: 88rpx; height: 88rpx; border: 1rpx solid var(--yy-v3-line-strong, #35465A); border-radius: var(--yy-v3-radius-control, 24rpx); color: var(--yy-v3-text-secondary, #B7C1CE); background: var(--yy-v3-surface-raised, #1A2634); }
+.state.theme-v3 .state-icon { width: 50rpx; height: 50rpx; }
+.state.theme-v3 .state-symbol.network,
+.state.theme-v3 .state-symbol.offline,
+.state.theme-v3 .state-symbol.service,
+.state.theme-v3 .state-symbol.media { color: var(--yy-v3-class, #D6A84B); }
+.state.theme-v3 .state-symbol.auth,
+.state.theme-v3 .state-symbol.conflict { color: var(--yy-v3-practice, #5B7FFF); }
+.state.theme-v3 .state-symbol.revoked,
+.state.theme-v3 .state-symbol.unavailable { color: var(--yy-v3-text-muted, #8997A8); }
+.state.theme-v3 .state-title { color: var(--yy-v3-text, #F2F5F8); font-size: 30rpx; font-weight: 600; }
+.state.theme-v3 .state-desc { color: var(--yy-v3-text-secondary, #B7C1CE); font-size: 24rpx; line-height: 1.65; }

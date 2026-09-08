@@ -1,0 +1,145 @@
+/* Mini-program-only semantic theme. Existing V2 tokens and admin output stay unchanged. */
+page {
+  --yy-v3-canvas: #0A0F16;
+  --yy-v3-surface: #151F2B;
+  --yy-v3-surface-raised: #1A2634;
+  --yy-v3-surface-floating: #262D36;
+  --yy-v3-surface-muted: #101821;
+  --yy-v3-text: #F2F5F8;
+  --yy-v3-text-secondary: #B7C1CE;
+  --yy-v3-text-muted: #8997A8;
+  --yy-v3-text-disabled: rgba(183, 193, 206, .52);
+  --yy-v3-accent-ink: #071016;
+  --yy-v3-brand: #45A3FF;
+  --yy-v3-brand-highlight: #78C4FF;
+  --yy-v3-brand-deep: #176FC8;
+  --yy-v3-brand-soft: rgba(69, 163, 255, .14);
+  --yy-v3-line: rgba(170, 182, 197, .12);
+  --yy-v3-line-strong: rgba(170, 182, 197, .22);
+  --yy-v3-preview: #4CBFD3;
+  --yy-v3-preview-ambient: rgba(76, 191, 211, .04);
+  --yy-v3-preview-soft: rgba(76, 191, 211, .12);
+  --yy-v3-preview-border: rgba(76, 191, 211, .32);
+  --yy-v3-preview-strong: rgba(76, 191, 211, .48);
+  --yy-v3-class: #D6A84B;
+  --yy-v3-class-ambient: rgba(214, 168, 75, .04);
+  --yy-v3-class-soft: rgba(214, 168, 75, .12);
+  --yy-v3-class-border: rgba(214, 168, 75, .32);
+  --yy-v3-class-strong: rgba(214, 168, 75, .48);
+  --yy-v3-practice: #5B7FFF;
+  --yy-v3-practice-ambient: rgba(91, 127, 255, .04);
+  --yy-v3-practice-soft: rgba(91, 127, 255, .12);
+  --yy-v3-practice-border: rgba(91, 127, 255, .32);
+  --yy-v3-practice-strong: rgba(91, 127, 255, .48);
+  --yy-v3-review: #3FB982;
+  --yy-v3-review-ambient: rgba(63, 185, 130, .04);
+  --yy-v3-review-soft: rgba(63, 185, 130, .12);
+  --yy-v3-review-border: rgba(63, 185, 130, .32);
+  --yy-v3-review-strong: rgba(63, 185, 130, .48);
+  --yy-v3-correction: #E96B50;
+  --yy-v3-correction-ambient: rgba(233, 107, 80, .04);
+  --yy-v3-correction-soft: rgba(233, 107, 80, .12);
+  --yy-v3-correction-border: rgba(233, 107, 80, .32);
+  --yy-v3-correction-strong: rgba(233, 107, 80, .48);
+  --yy-v3-danger: #EF6B73;
+  --yy-v3-success: #3FB982;
+  --yy-v3-focus: var(--yy-v3-brand);
+  --yy-v3-font: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --yy-v3-display-font: var(--yy-v3-font);
+  --yy-v3-number-font: var(--yy-v3-font);
+  --yy-v3-title-letter-spacing: 0;
+  --yy-v3-weight-regular: 400;
+  --yy-v3-weight-medium: 500;
+  --yy-v3-weight-semibold: 600;
+  --yy-v3-type-page: 40rpx;
+  --yy-v3-type-section: 31rpx;
+  --yy-v3-type-card: 28rpx;
+  --yy-v3-type-body: 26rpx;
+  --yy-v3-type-body-small: 24rpx;
+  --yy-v3-type-caption: 22rpx;
+  --yy-v3-line-title: 1.3;
+  --yy-v3-line-body: 1.55;
+  --yy-v3-page-x: 32rpx;
+  --yy-v3-touch: 88rpx;
+  --yy-v3-tab-height: 168rpx;
+  --yy-v3-radius-panel: 36rpx;
+  --yy-v3-radius-card: 32rpx;
+  --yy-v3-radius-control: 24rpx;
+  --yy-v3-radius-compact: 16rpx;
+  --yy-v3-radius-pill: 999rpx;
+  --yy-v3-space-xs: 8rpx;
+  --yy-v3-space-sm: 16rpx;
+  --yy-v3-space-md: 24rpx;
+  --yy-v3-space-lg: 32rpx;
+  --yy-v3-space-xl: 48rpx;
+  --yy-v3-duration-fast: 160ms;
+  --yy-v3-duration-normal: 220ms;
+  --yy-v3-ease-out: cubic-bezier(.2, .8, .2, 1);
+  --yy-v3-state-pressed: var(--yy-v3-brand-soft);
+  --yy-v3-pressed-opacity: .94;
+  --yy-v3-press-scale: .992;
+  --yy-v3-shadow-panel: 0 20rpx 52rpx rgba(0, 0, 0, .28), inset 0 1rpx 0 rgba(255, 255, 255, .035);
+  --yy-v3-shadow-floating: 0 22rpx 56rpx rgba(0, 0, 0, .38), inset 0 1rpx 0 rgba(255, 255, 255, .05);
+  --yy-v3-z-content: 1;
+  --yy-v3-z-actions: 70;
+  --yy-v3-z-fab: 80;
+  --yy-v3-z-nav: 90;
+  --yy-v3-z-tabbar: 100;
+  --yy-v3-z-backdrop: 200;
+  --yy-v3-z-modal: 210;
+  --yy-v3-z-dialog: 220;
+  --yy-v3-z-toast: 300;
+  --yy-v3-nav-bg: rgba(10, 15, 22, .96);
+  --yy-v3-nav-bg-transparent: rgba(10, 15, 22, .88);
+  --yy-v3-actions-bg: rgba(10, 15, 22, .98);
+  --yy-v3-texture-opacity: .05;
+}
+
+.yy-v3-theme {
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  color: var(--yy-v3-text);
+  background: var(--yy-v3-canvas);
+  font-family: var(--yy-v3-font);
+  font-weight: var(--yy-v3-weight-regular);
+}
+
+.yy-v3-theme button,
+.yy-v3-theme input,
+.yy-v3-theme textarea,
+.yy-v3-theme picker { font-family: var(--yy-v3-font); }
+
+.yy-v3-theme button {
+  transform-origin: center;
+  transition: transform var(--yy-v3-duration-fast, 160ms) var(--yy-v3-ease-out, ease-out), opacity var(--yy-v3-duration-fast, 160ms) var(--yy-v3-ease-out, ease-out), border-color var(--yy-v3-duration-fast, 160ms) var(--yy-v3-ease-out, ease-out), background-color var(--yy-v3-duration-fast, 160ms) var(--yy-v3-ease-out, ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.yy-v3-theme button.button-hover,
+.yy-v3-interactive--pressed {
+  opacity: var(--yy-v3-pressed-opacity, .94);
+  transform: scale(var(--yy-v3-press-scale, .992));
+}
+.yy-v3-theme button:focus { outline: none; }
+.yy-v3-theme button:focus-visible { box-shadow: 0 0 0 3rpx var(--yy-v3-focus); }
+.yy-v3-theme input:focus,
+.yy-v3-theme textarea:focus { border-color: var(--yy-v3-focus); }
+
+.yy-v3-number { font-family:var(--yy-v3-number-font); font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+.yy-v3-theme .hero-title,
+.yy-v3-theme .card-title,
+.yy-v3-theme .card-heading-title,
+.yy-v3-theme .section-title,
+.yy-v3-theme .entry-title,
+.yy-v3-theme .result-title,
+.yy-v3-theme .recall-prompt { font-family:var(--yy-v3-display-font); letter-spacing:var(--yy-v3-title-letter-spacing,0); }
+.yy-v3-theme .metric-row text:first-child,
+.yy-v3-theme .result-stats view text:first-child { font-family:var(--yy-v3-number-font); font-variant-numeric:tabular-nums; font-feature-settings:"tnum"; }
+.yy-v3-muted { color: var(--yy-v3-text-muted); }
+.yy-v3-secondary { color: var(--yy-v3-text-secondary); }
+
+@media (prefers-reduced-motion: reduce) {
+  .yy-v3-theme button { transition: none; }
+  .yy-v3-theme button.button-hover,
+  .yy-v3-interactive--pressed { transform: none; }
+}

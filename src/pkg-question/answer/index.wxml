@@ -1,0 +1,104 @@
+<yy-page-shell title="{{submitted ? '本题解析' : title}}" back="{{!guideMode}}" hideStageDot="{{true}}" hideAssistant="{{true}}" stage="practice" kind="task" tabbar="{{false}}" fixedActions="{{state === 'ready'}}">
+  <button wx:if="{{state === 'ready' && !submitted && !guideMode}}" slot="nav-right" class="end-link" hover-start-time="20" hover-stay-time="180" bindtap="askEnd">结束</button>
+  <yy-state wx:if="{{state !== 'ready'}}" type="{{state}}" theme="v3" title="{{wrongCaseContextInvalid ? '错题上下文已失效' : (state === 'empty' ? '暂无可作答题目' : '')}}" desc="{{wrongCaseContextInvalid ? '请返回错题详情，重新进入本次重测或相似题验证。' : (state === 'empty' ? '当前筛选没有完成审核并发布的题目。' : '')}}" actionText="{{wrongCaseContextInvalid ? '返回错题' : (state === 'loading' || state === 'empty' ? '' : (state === 'auth' ? '重新登录' : '重新加载'))}}" bind:retry="retryLoad" />
+  <block wx:else>
+    <yy-guide-coach wx:if="{{guideMode}}" eyebrow="{{guideCoach.eyebrow}}" title="{{guideCoach.title}}" desc="{{guideCoach.desc}}" answer="{{guideCoach.answer}}" bind:exit="exitGuide" />
+    <view wx:if="{{!submitted}}" class="practice-progress" aria-label="本组题目进度">
+      <view wx:if="{{!guideMode}}" class="practice-progress-copy">
+        <view class="practice-progress-primary">
+          <text class="practice-progress-kicker">本组进度</text>
+          <text class="practice-progress-position">第 <text class="yy-v3-number">{{questionIndex}}</text> / <text class="yy-v3-number">{{questionTotal}}</text> 题</text>
+        </view>
+        <text class="practice-progress-count">已完成 <text class="yy-v3-number">{{answeredCount}}</text> 题</text>
+      </view>
+      <view class="question-strip">
+        <view wx:for="{{questions}}" wx:key="questionId" class="question-number {{item.answered ? 'answered' : ''}} {{index + 1 === questionIndex ? 'active' : ''}} {{submitting ? 'disabled' : ''}}" aria-role="button" data-index="{{index}}" aria-disabled="{{submitting}}" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="jumpToQuestion" aria-label="第 {{index + 1}} 题{{item.answered ? '，已作答' : ''}}" aria-current="{{index + 1 === questionIndex}}">
+          <text class="yy-v3-number">{{index + 1}}</text>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{restoredOffline}}" class="status-message">网络暂不可用，已从本机恢复本次练习；未提交内容会保留，联网后先与服务器同步。</view>
+
+    <block wx:if="{{!submitted}}">
+      <view class="question-card">
+        <view class="question-meta"><text>{{current.type === 'MULTIPLE' ? '多选题' : '单选题'}}{{current.subject ? ' · ' + current.subject : ''}}</text><view wx:if="{{!guideMode}}" class="question-icon-actions"><view class="icon-button {{favorited ? 'active' : ''}}" aria-role="button" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="toggleFavorite" aria-label="收藏"><image src="{{favorited ? '/images/prototype/star-active.svg' : '/images/prototype/star.svg'}}" /></view><view class="icon-button {{guessed ? 'guess-active' : ''}}" aria-role="button" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="toggleGuess" aria-label="猜测标记"><image src="{{guessed ? '/images/prototype/guess-active.svg' : '/images/prototype/guess.svg'}}" /></view></view></view>
+        <view class="question-stem">{{current.stem}}</view>
+        <image wx:for="{{current.stemImages}}" wx:key="*this" class="question-image" src="{{item}}" mode="widthFix" />
+        <view class="option-list"><view wx:for="{{current.options}}" wx:key="key" class="answer-option {{item.selected ? 'selected' : ''}}" aria-role="button" aria-pressed="{{item.selected}}" aria-label="{{item.key}}，{{item.text}}{{guideMode && item.guideChoice ? '，体验选择' : ''}}" data-key="{{item.key}}" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="selectOption"><view class="answer-option-key">{{item.key}}</view><view class="answer-option-text">{{item.text}}</view><text wx:if="{{guideMode && item.guideChoice}}" class="guide-option-hint" aria-hidden="true">体验选择</text></view></view>
+        <view wx:if="{{!guideMode}}" class="inline-note" aria-role="button" aria-haspopup="dialog" aria-label="{{noteContent ? '查看或编辑本题笔记' : '记录本题笔记'}}" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="openNote">
+          <image class="inline-note-icon" src="/images/prototype/note.svg" mode="aspectFit" aria-hidden="true" />
+          <view class="inline-note-copy">
+            <text class="inline-note-title">本题笔记</text>
+            <text class="inline-note-desc">{{noteContent || '记录易错点或解题思路'}}</text>
+          </view>
+          <image class="inline-note-chevron" src="/images/prototype/chevron.svg" mode="aspectFit" aria-hidden="true" />
+        </view>
+      </view>
+      <view wx:if="{{!guideMode}}" class="feedback-link" aria-role="button" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="openFeedback">题目有误？提交纠错</view>
+    </block>
+
+    <block wx:else>
+      <view class="question-card explanation-question">
+        <view class="verdict-row">
+          <view class="verdict-chip {{isCorrect ? 'correct' : 'wrong'}}">{{isCorrect ? '回答正确' : '回答错误'}}</view>
+          <view class="answer-chip">正确答案 · <text class="yy-v3-number">{{answerText || '服务未返回'}}</text></view>
+        </view>
+        <view class="question-stem">{{current.stem}}</view>
+        <image wx:for="{{current.stemImages}}" wx:key="*this" class="question-image" src="{{item}}" mode="widthFix" />
+        <view class="option-list"><view wx:for="{{current.options}}" wx:key="key" class="answer-option {{item.correct ? 'correct' : ''}} {{item.wrong ? 'wrong' : ''}}" aria-disabled="true"><view class="answer-option-key">{{item.key}}</view><view class="answer-option-text">{{item.text}}</view><view wx:if="{{item.wrong || item.correct}}" class="answer-option-state {{item.wrong ? 'wrong' : 'correct'}}">{{item.wrong ? '你的答案' : '正确'}}</view></view></view>
+      </view>
+
+      <view class="analysis-card">
+        <view class="analysis-tabs {{guideMode ? 'single' : ''}}">
+          <button class="{{explanationTab === 'standard' ? 'active' : ''}}" data-tab="standard" hover-start-time="20" hover-stay-time="180" bindtap="chooseExplanationTab"><text class="analysis-tab-label">标准解析</text></button>
+          <button wx:if="{{!guideMode}}" class="{{explanationTab === 'note' ? 'active' : ''}}" data-tab="note" hover-start-time="20" hover-stay-time="180" bindtap="chooseExplanationTab"><text class="analysis-tab-label">我的笔记</text></button>
+        </view>
+        <view wx:if="{{explanationTab === 'standard'}}" class="analysis-pane standard-pane">
+          <view class="analysis-section analysis-section-main">
+            <view wx:if="{{explanation}}" class="analysis-copy">{{explanation}}</view>
+            <view wx:elif="{{!explanationImages.length && !examPoint && !pitfall && !optionAnalysis.length}}" class="analysis-empty">本题暂未提供标准解析。</view>
+            <image wx:for="{{explanationImages}}" wx:key="*this" class="question-image" src="{{item}}" mode="widthFix" />
+            <view wx:if="{{examPoint}}" class="governed-analysis-block">
+              <view class="governed-analysis-title">{{examPoint.title}}</view>
+              <view class="governed-analysis-copy">{{examPoint.content}}</view>
+            </view>
+            <view wx:if="{{pitfall}}" class="governed-analysis-block correction-block">
+              <view class="governed-analysis-title">{{pitfall.title}}</view>
+              <view class="governed-analysis-copy">{{pitfall.content}}</view>
+            </view>
+            <view wx:if="{{optionAnalysis.length}}" class="option-analysis-block">
+              <view class="governed-analysis-title">选项分析</view>
+              <view wx:for="{{optionAnalysis}}" wx:key="key" class="option-analysis-row"><text>{{item.key}}</text><view>{{item.content}}</view></view>
+            </view>
+          </view>
+        </view>
+        <view wx:if="{{explanationTab === 'note'}}" class="analysis-pane note-pane">
+          <view wx:if="{{noteContent}}" class="note-copy">{{noteContent}}</view>
+          <view wx:else class="note-empty"><view class="pane-copy">尚未记录本题笔记。</view></view>
+          <view class="note-actions {{noteContent ? 'has-note' : 'empty'}}">
+            <button class="inline-action primary" hover-start-time="20" hover-stay-time="180" bindtap="openNote">{{noteContent ? '编辑笔记' : '写笔记'}}</button>
+            <button wx:if="{{noteContent}}" class="inline-action danger" hover-start-time="20" hover-stay-time="180" bindtap="deleteNote">删除笔记</button>
+          </view>
+        </view>
+      </view>
+      <view wx:if="{{!guideMode}}" class="explain-tools"><view aria-role="button" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="toggleFavorite"><image src="{{favorited ? '/images/prototype/star-active.svg' : '/images/prototype/star.svg'}}" />{{favorited ? '已收藏' : '收藏'}}</view><view aria-role="button" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="openNote"><image src="/images/prototype/note.svg" />本题笔记</view><view aria-role="button" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="openFeedback">提交纠错</view></view>
+    </block>
+
+    <view wx:if="{{submitError}}" class="status-message error"><text>{{finishPending ? '结束练习暂未成功，已提交答案仍由服务器保留，可安全重试结算。' : (submitError === 'offline' ? '当前离线，答案已保存在本机。' : submitError === 'auth' ? '登录已失效，重新登录后可继续提交。' : submitError === 'network' ? '网络不稳定，答案已保存在本机，可安全重试。' : '提交失败，请稍后重试；不会重复计入。')}}</text></view>
+  </block>
+
+  <view slot="actions">
+    <block wx:if="{{state === 'ready'}}">
+      <yy-button wx:if="{{finishPending}}" loading="{{submitting}}" bind:tap="finishPractice"><text>重新结束并结算</text></yy-button>
+      <view wx:elif="{{!submitted && !submitError}}" class="practice-action-row">
+        <yy-button theme="v3" tone="secondary" disabled="{{questionIndex <= 1 || submitting}}" bind:tap="previousQuestion"><text>上一题</text></yy-button>
+        <yy-button theme="v3" loading="{{submitting}}" disabled="{{!selectedKeys.length}}" bind:tap="submit"><text>提交本题</text></yy-button>
+      </view>
+      <yy-button wx:elif="{{!submitted && submitError}}" theme="v3" loading="{{submitting}}" bind:tap="retrySubmit"><text>重新提交</text></yy-button>
+      <yy-button wx:else theme="v3" bind:tap="next"><text>{{guideMode ? '进入错因归因' : (questionIndex < questionTotal ? '下一题' : '查看整组结果')}}</text></yy-button>
+    </block>
+  </view>
+</yy-page-shell>
+
+<view wx:if="{{showEndPrompt}}" class="overlay yy-v3-theme"><view class="dialog"><view class="dialog-title">结束本次练习？</view><view class="dialog-copy">已提交的答案会保留，未提交选择仅保存在本机。</view><view class="dialog-actions"><yy-button theme="v3" tone="secondary" bind:tap="cancelEnd"><text>继续练习</text></yy-button><yy-button theme="v3" tone="danger" bind:tap="finishPractice"><text>结束并结算</text></yy-button></view></view></view>
+<view wx:if="{{showNoteEditor}}" class="overlay yy-v3-theme"><view class="dialog"><view class="dialog-title">我的笔记</view><textarea class="note-input" value="{{noteDraftContent}}" maxlength="1000" placeholder="记录易错点或解题思路" bindinput="inputNote" /><view class="dialog-actions"><yy-button theme="v3" tone="secondary" bind:tap="closeNote"><text>取消</text></yy-button><yy-button theme="v3" loading="{{savingNote}}" bind:tap="saveNote"><text>保存笔记</text></yy-button></view></view></view>

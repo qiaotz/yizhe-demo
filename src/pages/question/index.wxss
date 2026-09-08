@@ -1,0 +1,22 @@
+page { background:#0A0F16; }
+.card-title,.entry-title,.section-title { font-family:var(--yy-v3-display-font,var(--yy-v3-font)); letter-spacing:var(--yy-v3-title-letter-spacing,0); }
+.prototype-card { box-sizing:border-box; margin-top:28rpx; padding:32rpx; border:1rpx solid var(--yy-v3-line); border-radius:36rpx; background:var(--yy-v3-surface); }
+.eyebrow { color:var(--yy-v3-practice); font-size:24rpx; line-height:34rpx; font-weight:600; letter-spacing:.14em; }
+.card-title { margin-top:16rpx; color:var(--yy-v3-text); font-size:31rpx; line-height:46rpx; font-weight:600; }
+.card-sub { margin-top:8rpx; color:var(--yy-v3-text-secondary); font-size:26rpx; line-height:40rpx; font-weight:500; }
+.chip-row { display:flex; flex-wrap:wrap; gap:12rpx; margin-top:20rpx; }
+.chip { display:inline-flex; min-height:48rpx; box-sizing:border-box; align-items:center; padding:6rpx 20rpx; border:1rpx solid var(--yy-v3-line-strong); border-radius:999rpx; color:var(--yy-v3-text-secondary); font-size:24rpx; line-height:34rpx; font-weight:500; white-space:nowrap; }
+.main-practice yy-button { display:block; margin-top:28rpx; }
+.main-practice.disabled { opacity:.68; }
+.paper-entry { display:flex; min-height:136rpx; align-items:center; gap:24rpx; padding:24rpx 32rpx; }
+.entry-icon { display:flex; width:76rpx; height:76rpx; flex:none; align-items:center; justify-content:center; border-radius:22rpx; background:var(--yy-v3-practice-soft); }
+.entry-icon image { width:40rpx; height:40rpx; }
+.entry-copy { flex:1; min-width:0; }
+.entry-title,.section-title { color:var(--yy-v3-text); font-size:28rpx; line-height:42rpx; font-weight:600; }
+.entry-sub { overflow:hidden; margin-top:4rpx; color:var(--yy-v3-text-secondary); font-size:24rpx; line-height:34rpx; font-weight:500; text-overflow:ellipsis; white-space:nowrap; }
+.chevron { width:32rpx; height:32rpx; flex:none; }
+.recent-row { display:flex; align-items:center; justify-content:space-between; gap:20rpx; margin-top:24rpx; }
+.recent-title { color:var(--yy-v3-text); font-size:26rpx; line-height:38rpx; font-weight:500; }
+.recent-sub { margin-top:6rpx; color:var(--yy-v3-text-muted); font-size:24rpx; line-height:34rpx; }
+.chip.warning { flex:none; color:var(--yy-v3-class); border-color:var(--yy-v3-class-border); background:var(--yy-v3-class-soft); }
+.chip.success { flex:none; color:var(--yy-v3-review); border-color:var(--yy-v3-review-border); background:var(--yy-v3-review-soft); }

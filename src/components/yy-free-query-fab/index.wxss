@@ -1,0 +1,92 @@
+.free-query-fab {
+  position:fixed;
+  z-index:var(--yy-v3-z-fab,80);
+  right:calc(var(--yy-h5-fixed-inset,0px) + 24rpx + env(safe-area-inset-right,0px));
+  display:flex;
+  width:100rpx;
+  height:100rpx;
+  box-sizing:border-box;
+  align-items:center;
+  justify-content:center;
+  border:2rpx solid #20D9EC;
+  border-radius:50%;
+  background:rgba(5,17,32,.97);
+  box-shadow:0 10rpx 28rpx rgba(0,8,20,.42),0 0 20rpx rgba(31,161,232,.15);
+  transition:transform 150ms ease,box-shadow 150ms ease;
+  touch-action:none;
+  cursor:grab;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.free-query-fab--pressed,.free-query-fab.is-dragging { transform:scale(.95); box-shadow:0 6rpx 16rpx rgba(0,8,20,.36),0 0 12rpx rgba(31,161,232,.12); }
+.free-query-fab.is-dragging { cursor:grabbing; }
+.free-query-fab:focus { outline:none; }
+.free-query-fab:focus-visible .free-query-fab__halo { border-color:var(--yy-v3-focus,#45A3FF); box-shadow:0 0 0 5rpx rgba(69,163,255,.18),0 8rpx 20rpx rgba(0,8,20,.24); }
+.free-query-fab__halo { position:absolute; inset:4rpx; border:2rpx solid rgba(74,123,255,.72); border-right-color:#28E3EF; border-bottom-color:#189AE9; border-radius:50%; }
+.free-query-fab__bot { position:relative; z-index:2; display:flex; width:68rpx; height:58rpx; box-sizing:border-box; align-items:flex-end; justify-content:center; padding-bottom:3rpx; border:2rpx solid rgba(39,218,237,.92); border-radius:48% 48% 42% 42%; color:#B9FAFF; background:radial-gradient(circle at 50% 30%,#123752 0%,#0A2138 64%,#071729 100%); box-shadow:inset 0 0 18rpx rgba(38,189,231,.12); }
+.free-query-fab__bot::after { position:absolute; bottom:-8rpx; left:12rpx; width:15rpx; height:14rpx; box-sizing:border-box; border-bottom:2rpx solid #25D6EA; border-left:2rpx solid #25D6EA; background:#081A2D; content:""; transform:skewY(-30deg) rotate(-12deg); }
+.free-query-fab__bot text { font-size:33rpx; line-height:38rpx; font-weight:700; letter-spacing:.02em; text-shadow:0 0 12rpx rgba(52,223,239,.28); }
+.free-query-fab__antenna { position:absolute; top:-17rpx; left:50%; width:2rpx; height:15rpx; background:#24DCEB; transform:translateX(-50%); }
+.free-query-fab__antenna view { position:absolute; top:-5rpx; left:50%; width:9rpx; height:9rpx; border-radius:50%; background:#2BE3EF; box-shadow:0 0 10rpx rgba(43,227,239,.48); transform:translateX(-50%); }
+.free-query-fab__eyes { position:absolute; top:8rpx; left:50%; display:flex; gap:12rpx; transform:translateX(-50%); }
+.free-query-fab__eyes view { width:5rpx; height:5rpx; border-radius:50%; background:#56F0F5; }
+.free-query-fab__ear { position:absolute; z-index:1; top:42rpx; width:10rpx; height:23rpx; border-radius:10rpx; background:linear-gradient(180deg,#3079FF,#2260D7); }
+.free-query-fab__ear.ear-left { left:8rpx; }.free-query-fab__ear.ear-right { right:8rpx; background:linear-gradient(180deg,#23CEE7,#2189E2); }
+@media (prefers-reduced-motion:reduce) { .free-query-fab { transition:none; } }
+
+/* V3.1 SHARED FAB SAMPLE — START
+ * Keep the contractual 100rpx drag/tap footprint; quiet only the visible skin.
+ */
+.free-query-fab {
+  border-color:transparent;
+  background:transparent;
+  box-shadow:none;
+}
+
+.free-query-fab__halo {
+  inset:8rpx;
+  border:1rpx solid var(--yy-v3-line-strong,rgba(170,182,197,.22));
+  background:var(--yy-v3-surface-raised,#1A2634);
+  box-shadow:0 8rpx 20rpx rgba(0,8,20,.24);
+}
+
+.free-query-fab__bot {
+  width:52rpx;
+  height:52rpx;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  border:0;
+  border-radius:18rpx;
+  color:var(--yy-v3-stage,var(--yy-v3-focus,#45A3FF));
+  background:var(--yy-v3-surface-muted,#101821);
+  box-shadow:none;
+}
+
+.free-query-fab__bot::after,
+.free-query-fab__ear,
+.free-query-fab__antenna,
+.free-query-fab__eyes { display:none; }
+
+.free-query-fab__bot text {
+  font-size:26rpx;
+  line-height:1;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-shadow:none;
+}
+
+.free-query-fab--pressed,
+.free-query-fab.is-dragging {
+  transform:scale(.96);
+  box-shadow:none;
+}
+
+.free-query-fab--pressed .free-query-fab__halo,
+.free-query-fab.is-dragging .free-query-fab__halo {
+  border-color:var(--yy-v3-stage,var(--yy-v3-focus,#45A3FF));
+  background:var(--yy-v3-surface,#151F2B);
+  box-shadow:0 5rpx 14rpx rgba(0,8,20,.22);
+}
+/* V3.1 SHARED FAB SAMPLE — END */

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#0A0F16" />
+    <meta name="description" content="医者学习产品交互演示。免登录体验，使用本地示例内容。" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'" />
+    <title>医者 · 交互演示</title>
+    <link rel="stylesheet" href="./h5-host.css" />
+  </head>
+  <body>
+    <aside class="portfolio-context" aria-label="项目介绍">
+      <a class="portfolio-wordmark" href="#/pages/showcase/index">医者<span>YIZHE</span></a>
+      <p class="portfolio-kicker">医学学习产品 · 作品演示</p>
+      <h1>让每次学习，<br />都有下一步。</h1>
+      <p>选择知识卡，发现盲点，理解知识，再通过练习、改错与主动回忆验证掌握。</p>
+      <nav aria-label="演示快捷入口">
+        <a href="#/pages/preview/index"><span class="flow-dot preview-dot"></span>从预习开始<span>→</span></a>
+        <a href="#/pkg-course/classroom/index"><span class="flow-dot class-dot"></span>探索知识课堂<span>→</span></a>
+        <a href="#/pkg-question/wrong-case/index"><span class="flow-dot correction-dot"></span>体验 AI 错因归因<span>→</span></a>
+        <a href="#/pages/review/index"><span class="flow-dot review-dot"></span>试试主动回忆<span>→</span></a>
+      </nav>
+      <p class="portfolio-local-note">免登录 · 示例内容<br />AI 回答为预置示例，进度仅保存在此浏览器。</p>
+    </aside>
+    <div id="app"></div>
+    <script type="module" src="/@weapp-vite/web/entry"></script>
+  </body>
+</html>

@@ -1,0 +1,1 @@
+<yy-page-shell theme="v3" title="医者 · 交互演示"><view style="padding:48rpx"><yy-button theme="v3" bind:tap="openDemo">进入学习示例</yy-button></view></yy-page-shell>

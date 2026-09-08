@@ -1,0 +1,53 @@
+<yy-page-shell title="间隔重做" back="{{!guideMode}}" stage="correction" kind="task" tabbar="{{false}}" fixedActions="{{state === 'ready' && (phase === 'question' || phase === 'result')}}" hideAssistant="{{true}}">
+  <yy-state wx:if="{{state !== 'ready'}}" type="{{state}}" theme="v3" desc="{{errorMessage}}" actionText="{{state === 'loading' ? '' : '重新加载'}}" bind:retry="retry" />
+  <block wx:else>
+    <yy-guide-coach wx:if="{{guideMode}}" eyebrow="{{guideCoach.eyebrow}}" title="{{guideCoach.title}}" desc="{{guideCoach.desc}}" answer="{{guideCoach.answer}}" bind:exit="exitGuide" />
+    <view wx:if="{{phase === 'question'}}" class="retest-page">
+      <view class="progress-row">
+        <view><text class="progress-eyebrow">改错验证</text><text class="progress-title">重做 · 即验证</text></view>
+        <view class="progress-count"><text class="yy-v3-number">{{position}}</text><text>/ {{total}}</text></view>
+      </view>
+      <view class="interval-card" aria-label="归因完成，当前正在间隔重做，提交后查看验证结果">
+        <view class="interval-step done"><view class="interval-dot">1</view><text>归因完成</text></view>
+        <view class="interval-line done" />
+        <view class="interval-step current"><view class="interval-dot">2</view><text>间隔重做</text></view>
+        <view class="interval-line" />
+        <view class="interval-step"><view class="interval-dot">3</view><text>验证结果</text></view>
+      </view>
+      <view class="question-card">
+        <view class="question-meta"><text class="question-type">{{item.typeLabel}}</text><text wx:if="{{item.retestFailureCount}}" class="attempt-label">第 {{item.retestFailureCount + 1}} 次验证</text></view>
+        <view class="stem">{{item.stem}}</view>
+        <view wx:for="{{item.options}}" wx:key="key" class="option {{item.selected ? 'selected' : ''}} {{item.correct ? 'correct' : ''}} {{item.wrong ? 'wrong' : ''}}" aria-role="button" aria-pressed="{{item.selected}}" aria-label="{{item.key}}，{{item.content}}{{guideMode && item.guideChoice ? '，引导答案' : ''}}" data-key="{{item.key}}" hover-class="option-pressed" hover-start-time="20" hover-stay-time="180" bindtap="selectOption">
+          <text class="option-key">{{item.key}}</text><text class="option-copy">{{item.content}}</text><text wx:if="{{guideMode && item.guideChoice}}" class="guide-option-hint" aria-hidden="true">引导答案</text>
+        </view>
+      </view>
+      <view class="privacy-note">{{guideMode ? '请根据“引导答案”完成本次体验；作答结果不会计入错题记录。' : '请独立作答。提交前不展示解析与归因提示。'}}</view>
+      <view wx:if="{{errorMessage}}" class="error-note">{{errorMessage}}</view>
+    </view>
+
+    <view wx:elif="{{phase === 'result'}}" class="result-page">
+      <view class="result-status {{result.cleared ? 'cleared' : 'retry'}}">
+        <view class="result-mark">{{result.cleared ? '✓' : '↻'}}</view>
+        <view class="result-heading"><view class="result-eyebrow">间隔重做结果</view><view class="result-title">{{result.title}}</view><view class="result-copy">{{result.message}}</view></view>
+      </view>
+      <view wx:if="{{result.nextDueText}}" class="next-due">下次开放 · {{result.nextDueText}}</view>
+      <view class="question-card compact">
+        <view class="stem">{{item.stem}}</view>
+        <view wx:for="{{item.options}}" wx:key="key" class="option static {{item.correct ? 'correct' : ''}} {{item.wrong ? 'wrong' : ''}}"><text class="option-key">{{item.key}}</text><text class="option-copy">{{item.content}}</text></view>
+        <view class="analysis"><view class="analysis-title">解析</view><text>{{item.explanation}}</text></view>
+        <view class="reason-recap"><view>已保存的错因</view><text>{{item.reasonSummary}}</text></view>
+      </view>
+    </view>
+
+    <view wx:elif="{{phase === 'summary'}}" class="summary-page">
+      <view class="summary-eyebrow">本轮重做完成</view><view class="summary-title">验证结果已经分别归档</view>
+      <view class="summary-grid"><view><text>{{summary.cleared}}</text><text>已消灭</text></view><view><text>{{summary.rescheduled}}</text><text>待再次重做</text></view><view><text>{{summary.skipped}}</text><text>状态已同步</text></view></view>
+      <yy-button theme="v3" bind:tap="backToWrong">返回改错首页</yy-button>
+    </view>
+    <view wx:else class="summary-page"><view class="summary-eyebrow">当前没有可重做题目</view><view class="summary-title">完成归因并到达开放时间后，会出现在这里</view><yy-button theme="v3" bind:tap="backToWrong">返回改错首页</yy-button></view>
+  </block>
+  <view slot="actions">
+    <yy-button wx:if="{{state === 'ready' && phase === 'question'}}" theme="v3" loading="{{submitting}}" disabled="{{!selectedKeys.length}}" bind:tap="submit">提交本次验证</yy-button>
+    <yy-button wx:elif="{{state === 'ready' && phase === 'result'}}" theme="v3" bind:tap="next">{{guideMode ? '进入主动回忆' : (total > 1 && position < total ? '继续下一道' : '完成本轮重做')}}</yy-button>
+  </view>
+</yy-page-shell>

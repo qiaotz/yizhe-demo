@@ -1,0 +1,88 @@
+{
+  "pages": [
+    "pages/showcase/index",
+    "pages/preview/index",
+    "pages/preview/chapter",
+    "pages/learning/index",
+    "pages/question/index",
+    "pages/wrong/index",
+    "pages/review/index",
+    "pages/onboarding/index"
+  ],
+  "subpackages": [
+    {
+      "root": "pkg-course",
+      "name": "course",
+      "pages": [
+        "classroom/index",
+        "learning-check/index"
+      ]
+    },
+    {
+      "root": "pkg-question",
+      "name": "question",
+      "pages": [
+        "answer/index",
+        "wrong-case/index",
+        "wrong-retest/index"
+      ]
+    }
+  ],
+  "window": {
+    "backgroundColor": "#0A0F16",
+    "backgroundTextStyle": "light",
+    "navigationStyle": "custom",
+    "navigationBarTitleText": "医者"
+  },
+  "tabBar": {
+    "custom": false,
+    "color": "#8997A8",
+    "selectedColor": "#45A3FF",
+    "backgroundColor": "#0D131B",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/preview/index",
+        "text": "预习",
+        "iconPath": "/beta/images/prototype/tab-preview.svg",
+        "selectedIconPath": "/beta/images/prototype/tab-preview-active.svg"
+      },
+      {
+        "pagePath": "pages/learning/index",
+        "text": "上课",
+        "iconPath": "/beta/images/prototype/tab-class.svg",
+        "selectedIconPath": "/beta/images/prototype/tab-class-active.svg"
+      },
+      {
+        "pagePath": "pages/question/index",
+        "text": "做题",
+        "iconPath": "/beta/images/prototype/tab-practice.svg",
+        "selectedIconPath": "/beta/images/prototype/tab-practice-active.svg"
+      },
+      {
+        "pagePath": "pages/wrong/index",
+        "text": "改错",
+        "iconPath": "/beta/images/prototype/tab-correction.svg",
+        "selectedIconPath": "/beta/images/prototype/tab-correction-active.svg"
+      },
+      {
+        "pagePath": "pages/review/index",
+        "text": "复习",
+        "iconPath": "/beta/images/prototype/tab-review.svg",
+        "selectedIconPath": "/beta/images/prototype/tab-review-active.svg"
+      }
+    ]
+  },
+  "usingComponents": {
+    "yy-nav": "/components/yy-nav/index",
+    "yy-card": "/components/yy-card/index",
+    "yy-button": "/components/yy-button/index",
+    "yy-state": "/components/yy-state/index",
+    "yy-option": "/components/yy-option/index",
+    "yy-page-shell": "/components/yy-page-shell/index",
+    "yy-stage-context": "/components/yy-stage-context/index"
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
+}

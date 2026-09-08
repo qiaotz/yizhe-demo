@@ -1,0 +1,1 @@
+{ "component": true, "usingComponents": { "yy-button": "/components/yy-button/index" }, "styleIsolation": "apply-shared" }

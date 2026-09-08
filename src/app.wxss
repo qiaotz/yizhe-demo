@@ -1,0 +1,138 @@
+@import "./styles/tokens.wxss";
+@import "./styles/ui-v3.wxss";
+
+page {
+  min-height: 100%;
+  color: var(--yy-v3-text);
+  background: var(--yy-v3-canvas);
+  font-family: var(--yy-v3-font);
+  font-size: 28rpx;
+}
+
+button::after { border: 0; }
+button { margin: 0; padding: 0; border: 0; line-height: 1.4; }
+
+/*
+ * Web Runtime renders a native button inside every mini-program `button`.
+ * Keeping that extra 44–48 px box in normal flow doubles the intended
+ * padding/min-height and makes composed controls (cards, nav actions, CTAs)
+ * substantially larger than their mini-program counterparts. Keep the real
+ * native button for focus, keyboard, disabled and loading semantics, while
+ * taking its redundant layout box out of normal flow.
+ */
+.weapp-btn--default > .weapp-btn {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+  align-items: inherit;
+  justify-content: inherit;
+  flex-direction: inherit;
+  gap: inherit;
+  padding: inherit;
+  border: 0;
+  border-radius: inherit;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  line-height: inherit;
+  text-align: inherit;
+}
+.weapp-btn--default > .weapp-btn > .weapp-btn__content { display:flex; width:100%; height:100%; min-width:0; flex-direction:inherit; align-items:inherit; justify-content:inherit; gap:inherit; }
+.weapp-btn--default > .weapp-btn > .weapp-btn__content > .weapp-btn__text { display:contents; }
+image { display: block; }
+
+.yy-page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 24rpx 28rpx 180rpx;
+}
+.yy-page.no-tab { padding-bottom: 48rpx; }
+.yy-hero {
+  margin: -24rpx -28rpx 24rpx;
+  padding: 32rpx 28rpx 44rpx;
+  color: var(--yy-ink);
+  background: linear-gradient(150deg, #E9F2FF 0%, #F2EFFF 62%, #FFF8F1 100%);
+}
+.yy-brand { display: flex; align-items: center; gap: 12rpx; font-size: 26rpx; font-weight: 800; }
+.yy-brand-mark {
+  display: inline-flex; width: 52rpx; height: 52rpx; align-items: center; justify-content: center;
+  border-radius: 16rpx; color: #fff; background: linear-gradient(135deg, var(--yy-primary), var(--yy-purple));
+}
+.yy-title { font-size: 42rpx; line-height: 1.25; font-weight: 800; color: var(--yy-ink); }
+.yy-subtitle { margin-top: 10rpx; color: var(--yy-muted); font-size: 25rpx; line-height: 1.55; }
+.yy-section-row { display: flex; align-items: center; justify-content: space-between; margin: 34rpx 2rpx 16rpx; }
+.yy-section-title { font-size: 31rpx; font-weight: 800; color: var(--yy-ink); }
+.yy-link { color: var(--yy-primary); font-size: 24rpx; }
+.yy-card {
+  box-sizing: border-box; margin: 18rpx 0; padding: 28rpx; border: 1rpx solid rgba(229, 234, 243, .92);
+  border-radius: 28rpx; background: var(--yy-surface); box-shadow: var(--yy-shadow-card);
+}
+.yy-card.blue { background: linear-gradient(145deg, #EAF3FF, #F5F1FF); }
+.yy-card.orange { background: var(--yy-orange-soft); border-color: #FFD8C0; }
+.yy-card.success { background: var(--yy-success-soft); border-color: #C6ECE5; }
+.yy-card.danger { background: var(--yy-danger-soft); border-color: #F4CCD2; }
+.yy-row { display: flex; align-items: center; }
+.yy-between { display: flex; align-items: center; justify-content: space-between; gap: 20rpx; }
+.yy-grow { flex: 1; min-width: 0; }
+.yy-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18rpx; }
+.yy-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14rpx; }
+.yy-list { overflow: hidden; border: 1rpx solid var(--yy-line); border-radius: 26rpx; background: var(--yy-surface); }
+.yy-list-item {
+  display: flex; width: 100%; box-sizing: border-box; align-items: center; gap: 20rpx; padding: 25rpx 24rpx;
+  border-bottom: 1rpx solid var(--yy-line); background: transparent; text-align: left; color: var(--yy-ink);
+}
+.yy-list-item:last-child { border-bottom: 0; }
+.yy-list-title { display: block; color: var(--yy-ink); font-size: 28rpx; font-weight: 700; }
+.yy-list-desc { display: block; margin-top: 6rpx; color: var(--yy-muted); font-size: 23rpx; line-height: 1.45; }
+.yy-chevron { color: #8A96AB; font-size: 36rpx; font-weight: 400; }
+.yy-icon-box {
+  display: inline-flex; flex: 0 0 72rpx; width: 72rpx; height: 72rpx; align-items: center; justify-content: center;
+  border-radius: 22rpx; color: var(--yy-primary); background: var(--yy-blue-soft); font-size: 30rpx; font-weight: 800;
+}
+.yy-icon-box.orange { color: var(--yy-orange-strong); background: var(--yy-orange-soft); }
+.yy-icon-box.purple { color: var(--yy-purple); background: var(--yy-lavender-soft); }
+.yy-icon-box.red { color: var(--yy-danger); background: var(--yy-danger-soft); }
+.yy-chip {
+  display: inline-flex; align-items: center; box-sizing: border-box; padding: 7rpx 15rpx; border-radius: var(--yy-radius-pill);
+  color: var(--yy-primary); background: var(--yy-blue-soft); font-size: 21rpx; font-weight: 700;
+}
+.yy-chip.orange { color: var(--yy-orange-strong); background: var(--yy-orange-soft); }
+.yy-chip.success { color: var(--yy-success); background: var(--yy-success-soft); }
+.yy-chip.gray { color: var(--yy-muted); background: #F0F2F6; }
+.yy-chip.danger { color: var(--yy-danger); background: var(--yy-danger-soft); }
+.yy-primary-button, .yy-orange-button, .yy-outline-button {
+  display: flex; width: 100%; min-height: 92rpx; box-sizing: border-box; align-items: center; justify-content: center;
+  padding: 20rpx 28rpx; border-radius: 22rpx; font-size: 28rpx; font-weight: 800;
+}
+.yy-primary-button { color: #fff; background: linear-gradient(135deg, var(--yy-primary), var(--yy-primary-end)); }
+.yy-orange-button { color: #fff; background: linear-gradient(135deg, var(--yy-orange-strong), var(--yy-orange-strong-end)); }
+.yy-outline-button { color: var(--yy-primary); border: 2rpx solid #C8D8F5; background: #fff; }
+.yy-primary-button[disabled], .yy-orange-button[disabled], .yy-outline-button[disabled] { opacity: .48; }
+.yy-text-button { color: var(--yy-primary); background: transparent; font-size: 25rpx; }
+.yy-metric { min-width: 0; text-align: center; }
+.yy-metric-value { display: block; color: var(--yy-ink); font-size: 36rpx; font-weight: 850; }
+.yy-metric-label { display: block; margin-top: 7rpx; color: var(--yy-muted); font-size: 21rpx; }
+.yy-progress { overflow: hidden; height: 13rpx; border-radius: var(--yy-radius-pill); background: rgba(47,99,214,.12); }
+.yy-progress > view { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--yy-primary), var(--yy-purple)); }
+.yy-hint { color: var(--yy-muted); font-size: 23rpx; line-height: 1.55; }
+.yy-alert { display: flex; gap: 14rpx; margin: 18rpx 0; padding: 20rpx; border-radius: 20rpx; color: var(--yy-orange-strong); background: var(--yy-orange-soft); font-size: 23rpx; line-height: 1.5; }
+.yy-alert.danger { color: #AE3546; background: var(--yy-danger-soft); }
+.yy-form-label { display: block; margin-bottom: 12rpx; color: var(--yy-ink); font-size: 25rpx; font-weight: 750; }
+.yy-input, .yy-textarea, .yy-select {
+  width: 100%; box-sizing: border-box; border: 2rpx solid var(--yy-line); border-radius: 20rpx;
+  color: var(--yy-ink); background: #fff; font-size: 26rpx;
+}
+.yy-input, .yy-select { min-height: 88rpx; padding: 0 22rpx; }
+.yy-textarea { min-height: 220rpx; padding: 20rpx 22rpx; line-height: 1.55; }
+.yy-form-group { margin-bottom: 28rpx; }
+.yy-pills { display: flex; flex-wrap: wrap; gap: 14rpx; }
+.yy-pill { padding: 15rpx 22rpx; border: 2rpx solid var(--yy-line); border-radius: 18rpx; color: var(--yy-muted); background: #fff; font-size: 24rpx; }
+.yy-pill.active { color: var(--yy-primary); border-color: #B9CDF3; background: var(--yy-blue-soft); font-weight: 700; }
+.yy-divider { height: 1rpx; margin: 24rpx 0; background: var(--yy-line); }
+.yy-sticky-actions { position: sticky; bottom: 20rpx; z-index: 5; margin-top: 24rpx; padding: 14rpx; border-radius: 28rpx; background: rgba(247,249,253,.94); }
+.mt-8 { margin-top: 8rpx; } .mt-12 { margin-top: 12rpx; } .mt-16 { margin-top: 16rpx; } .mt-24 { margin-top: 24rpx; }
+.mb-0 { margin-bottom: 0; } .text-center { text-align: center; } .danger-text { color: var(--yy-danger); } .success-text { color: var(--yy-success); }

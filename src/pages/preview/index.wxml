@@ -1,0 +1,115 @@
+<yy-page-shell title="预习" stage="preview" kind="home" tabbar assistantMode="free-query" hideAssistant="{{guideMode}}">
+  <yy-stage-context text="{{directionLabel}}" position="选择章节" hideQuickLinks="{{guideMode}}" bind:contexttap="openGoal" bind:notes="openNotes" bind:profile="openProfile" />
+  <yy-guide-coach wx:if="{{guideMode}}" eyebrow="{{guideCoach.eyebrow}}" title="{{guideCoach.title}}" desc="{{guideCoach.desc}}" answer="{{guideCoach.answer}}" bind:exit="exitGuide" />
+
+  <yy-state wx:if="{{state === 'loading'}}" type="loading" theme="v3" />
+  <yy-state wx:elif="{{state === 'auth'}}" type="auth" theme="v3" title="登录后开始预习" desc="预习进度、知识状态和历史记录会绑定到当前账号。" actionText="登录并恢复" bind:retry="retry" />
+  <yy-state wx:elif="{{state === 'network' || state === 'offline' || state === 'service'}}" type="{{state}}" theme="v3" actionText="重新加载" bind:retry="retry" />
+
+  <block wx:else>
+    <view wx:if="{{loopRecovery && loopRecovery.type === 'VALIDATION'}}" class="prototype-card resume-card">
+      <view class="eyebrow">{{loopRecovery.recoveryEyebrow}}</view>
+      <view class="card-title">继续做题验证</view>
+      <view class="card-sub">{{loopRecovery.recoveryDescription}}</view>
+      <yy-button theme="v3" ariaLabel="{{loopRecovery.actionText}}" bind:tap="continueLoop">{{loopRecovery.actionText}}</yy-button>
+    </view>
+
+    <view wx:if="{{activePreview}}" class="prototype-card resume-card">
+      <view class="eyebrow">未完成的预习</view>
+      <view class="card-title">{{activePreview.chapter.subject ? activePreview.chapter.subject + ' · ' : ''}}{{activePreview.chapter.name}}</view>
+      <view class="card-sub">检测已完成 <text class="yy-v3-number">{{activePreview.answeredCount}} / {{activePreview.questionCount}}</text> 题<text wx:if="{{activePreview.answeredCount < activePreview.questionCount}}"> · 下次从第 {{activePreview.answeredCount + 1}} 题继续</text></view>
+      <yy-button theme="v3" ariaLabel="继续预习检测" bind:tap="continuePreview">继续预习检测</yy-button>
+      <button class="text-action" hover-start-time="20" hover-stay-time="180" bindtap="changeChapter">更换章节</button>
+    </view>
+
+    <view wx:if="{{loopRecovery && loopRecovery.type === 'CLASSROOM'}}" class="prototype-card resume-card">
+      <view class="eyebrow">{{loopRecovery.recoveryEyebrow}}</view>
+      <view class="card-title">{{loopRecovery.title || loopRecovery.lessonTitle}}</view>
+      <view class="card-sub">{{loopRecovery.recoveryDescription}}</view>
+      <yy-button theme="v3" ariaLabel="{{loopRecovery.actionText}}" bind:tap="continueLoop">{{loopRecovery.actionText}}</yy-button>
+    </view>
+
+    <view wx:if="{{loopRecoveryState === 'loading'}}" class="prototype-card resume-card" aria-role="status" aria-live="polite">
+      <view class="eyebrow">正在同步</view>
+      <view class="card-title">正在恢复续学状态</view>
+      <view class="card-sub">{{state === 'empty' ? '正在确认是否有未完成的课堂或做题验证。' : '章节目录仍可浏览，请稍候。'}}</view>
+    </view>
+
+    <view wx:if="{{loopRecoveryState === 'error'}}" class="prototype-card resume-card" aria-role="status" aria-live="polite">
+      <view class="eyebrow">续学状态暂未同步</view>
+      <view class="card-title">{{state === 'empty' ? '当前暂无已开放章节' : '章节目录仍可正常使用'}}</view>
+      <view class="card-sub">{{state === 'empty' ? '同时未能确认是否存在未完成的课堂或做题验证，可单独重试续学状态。' : '未能确认是否存在未完成的课堂或做题验证，请单独重试续学状态。'}}</view>
+      <yy-button theme="v3" ariaLabel="重试续学状态" bind:tap="retryLoopRecovery">重试续学状态</yy-button>
+    </view>
+
+    <view class="prototype-card catalog-card">
+      <view class="card-heading"><view class="card-heading-title">选择科目与章节</view><view class="chip focus">{{catalogExpanded ? '完整目录' : catalogFocusLabel}}</view></view>
+
+      <view wx:if="{{catalogHiddenCount > 0}}" class="catalog-disclosure" aria-role="button" aria-expanded="{{catalogExpanded}}" aria-label="{{catalogExpanded ? '收起完整目录，只看当前章节' : '展开完整目录，共' + chapters.length + '章'}}" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="toggleCatalog">
+        <text>{{catalogExpanded ? '只看当前章节' : '展开完整目录'}}</text>
+        <view class="catalog-disclosure-meta"><text class="yy-v3-number">{{catalogExpanded ? chapters.length : catalogHiddenCount}}</text><text>{{catalogExpanded ? ' 章' : ' 章待展开'}}</text><text class="catalog-disclosure-icon" aria-hidden="true">{{catalogExpanded ? '−' : '+'}}</text></view>
+      </view>
+
+      <view wx:if="{{catalogGroups.length}}" class="tree">
+        <view wx:for="{{catalogGroups}}" wx:key="subject" class="tree-node subject-node {{item.expanded ? 'open' : ''}}">
+          <view class="tree-head subject-head" aria-role="button" aria-expanded="{{item.expanded}}" aria-label="{{item.subject + '，' + item.totalChapterCount + '章，' + (item.expanded ? '已展开' : '已折叠')}}" data-subject="{{item.subject}}" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="toggleSubject">
+            <image src="/images/prototype/chevron.svg" aria-hidden="true" />
+            <text class="tree-title">{{item.subject}}</text>
+            <view class="chip yy-v3-number">{{item.totalChapterCount}} 章</view>
+          </view>
+
+          <view wx:if="{{item.expanded}}" class="tree-body subject-body">
+            <block wx:for="{{item.chapters}}" wx:for-item="chapter" wx:key="id">
+            <view wx:if="{{catalogExpanded || chapter.current}}" class="tree-node chapter-node {{chapter.current ? 'current' : ''}} {{chapter.expanded ? 'open' : ''}}">
+              <view class="tree-head chapter-head" aria-role="button" aria-expanded="{{chapter.expanded}}" aria-label="{{chapter.displayName + '，' + chapter.visibleKnowledgePointCount + '个' + (chapter.nodeLabel || '知识点') + (chapter.current ? '，当前章节' : '') + '，' + (chapter.expanded ? '已展开' : '已折叠')}}" data-chapter-id="{{chapter.id}}" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="toggleChapter">
+                <image src="/images/prototype/chevron.svg" aria-hidden="true" />
+                <view class="chapter-copy"><view class="chapter-name">{{chapter.displayName}}</view><view class="chapter-meta"><text class="yy-v3-number">{{chapter.visibleKnowledgePointCount}}</text> 个{{chapter.nodeLabel || '知识点'}}</view></view>
+                <view class="chip {{chapter.current || chapter.expanded ? 'accent' : ''}}">{{chapter.current ? catalogFocusLabel : (chapter.expanded ? '已展开' : '展开')}}</view>
+              </view>
+
+              <view wx:if="{{chapter.expanded}}" class="tree-body chapter-body">
+                <view wx:for="{{chapter.lessons}}" wx:for-item="lesson" wx:key="businessKey" class="lesson-node {{lesson.expanded ? 'open' : ''}}">
+                  <view class="lesson-head" aria-role="button" aria-expanded="{{lesson.expanded}}" aria-label="{{lesson.displayTitle + '，' + lesson.knowledgePointCount + '个' + (chapter.nodeLabel || '知识点') + '，' + (lesson.expanded ? '已展开' : '已折叠')}}" data-lesson-key="{{lesson.businessKey}}" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="toggleLesson">
+                    <image src="/images/prototype/chevron.svg" aria-hidden="true" />
+                    <text>{{lesson.displayTitle}}</text>
+                    <view class="chip yy-v3-number">{{lesson.knowledgePointCount}} {{chapter.nodeLabel || '知识点'}}</view>
+                  </view>
+                  <view wx:if="{{lesson.expanded}}" class="knowledge-list">
+                    <!-- V3.1 KNOWLEDGE ROW LAYOUT — START -->
+                    <view wx:for="{{lesson.knowledgePoints}}" wx:for-item="point" wx:key="businessKey" class="knowledge-row" aria-role="button" aria-label="{{point.name + '，' + point.stateText}}" data-chapter-id="{{chapter.id}}" data-knowledge-key="{{point.businessKey || point.knowledgeKey || point.id}}" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="openKnowledgePoint">
+                      <view class="knowledge-row-layout">
+                        <view class="status-dot {{point.stateClass}}" />
+                        <text>{{point.name}}</text>
+                        <view class="chip status {{point.stateClass}}">{{point.stateText}}</view>
+                      </view>
+                    </view>
+                    <!-- V3.1 KNOWLEDGE ROW LAYOUT — END -->
+                  </view>
+                </view>
+              </view>
+            </view>
+            </block>
+          </view>
+        </view>
+      </view>
+
+      <yy-state wx:else type="empty" theme="v3" compact title="暂无已开放章节" desc="发布后的课程目录会显示在这里。" />
+    </view>
+
+    <view wx:if="{{historyItems.length}}" class="prototype-card history-card">
+      <view class="history-heading"><view class="history-title">历史预习</view><view class="history-count yy-v3-number">最近 {{historyItems.length}} 次</view></view>
+      <view class="history-list">
+        <view wx:for="{{visibleHistoryItems}}" wx:key="id" class="history-row" hover-class="history-row-hover" aria-role="button" aria-label="{{item.title + (item.masteryText ? '，' + item.masteryText : '') + '，' + item.dateText + '，' + item.durationText}}" data-id="{{item.id}}" hover-start-time="20" hover-stay-time="180" bindtap="openHistory">
+          <view class="history-row-layout">
+            <view class="history-primary-line">
+              <view class="history-name">{{item.title}}</view>
+              <view wx:if="{{item.masteryText}}" class="history-mastery {{item.masteryClass}}">{{item.masteryText}}</view>
+            </view>
+            <view class="history-meta"><text>{{item.dateText}}</text><text class="history-meta-divider">·</text><text>{{item.durationText}}</text></view>
+          </view>
+        </view>
+      </view>
+      <button wx:if="{{historyHiddenCount > 0}}" class="history-toggle" aria-expanded="{{historyExpanded}}" aria-label="{{historyExpanded ? '收起历史预习' : '展开其余 ' + historyHiddenCount + ' 条历史预习'}}" bindtap="toggleHistory"><view class="history-toggle-layout"><text class="history-toggle-label">{{historyExpanded ? '收起历史' : '展开其余 ' + historyHiddenCount + ' 条'}}</text></view></button>
+    </view>
+  </block>
+</yy-page-shell>

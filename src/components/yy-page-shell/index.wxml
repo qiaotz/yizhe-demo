@@ -1,0 +1,13 @@
+<view class="yy-v3-theme yy-page-shell stage-{{safeStage}} kind-{{safeKind}} {{tabbar ? 'with-tabbar' : 'no-tabbar'}}">
+  <image wx:if="{{texturePath && safeKind === 'home'}}" class="yy-page-shell__texture" src="{{texturePath}}" mode="scaleToFill" aria-hidden="true" />
+  <yy-nav wx:if="{{title || back}}" title="{{title}}" back="{{back}}" backText="{{backText}}" hideStageDot="{{hideStageDot}}" transparent="{{transparentNav}}" theme="v3" stage="{{safeStage}}">
+    <view slot="left"><slot name="nav-left" /></view>
+    <view slot="right" class="yy-page-shell__nav-tools">
+      <slot name="nav-right" />
+    </view>
+  </yy-nav>
+  <view class="yy-page-shell__content"><slot /></view>
+  <view wx:if="{{fixedActions}}" class="yy-page-shell__actions"><slot name="actions" /></view>
+  <yy-free-query-fab wx:if="{{!hideAssistant && assistantMode === 'free-query'}}" />
+  <yy-ai-assistant wx:elif="{{!hideAssistant && assistantMode === 'context'}}" stage="{{safeStage}}" tabbar="{{tabbar}}" fixedActions="{{fixedActions}}" />
+</view>

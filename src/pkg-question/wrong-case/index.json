@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "改错详情",
+  "usingComponents": {
+    "yy-guide-coach": "/components/yy-guide-coach/index"
+  }
+}

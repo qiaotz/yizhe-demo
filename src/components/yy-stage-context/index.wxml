@@ -1,0 +1,10 @@
+<view class="context-row">
+  <view class="context-copy" aria-role="button" hover-class="context-control--pressed" hover-start-time="20" hover-stay-time="180" bindtap="contextTap">
+    <text class="context-direction">{{text}}</text>
+    <text wx:if="{{position}}" class="position">{{position}}</text>
+  </view>
+  <view wx:if="{{!hideQuickLinks}}" class="quick-links">
+    <view class="note-link" aria-role="button" hover-class="context-control--pressed" hover-start-time="20" hover-stay-time="180" bindtap="notesTap"><view class="context-control-surface note-surface"><image src="/images/prototype/note.svg" /><text>笔记</text></view></view>
+    <view class="avatar-link" aria-role="button" hover-class="context-control--pressed" hover-start-time="20" hover-stay-time="180" bindtap="profileTap" aria-label="个人中心"><view class="context-control-surface avatar-surface"><image src="/images/prototype/user.svg" /></view></view>
+  </view>
+</view>

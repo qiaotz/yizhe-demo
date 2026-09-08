@@ -1,0 +1,6 @@
+<button class="option theme-{{theme}} {{option.selected ? 'selected' : ''}} {{submitted && option.correct ? 'correct' : ''}} {{submitted && option.wrong ? 'wrong' : ''}}" disabled="{{disabled || submitted}}" aria-label="选项 {{option.key}}：{{option.text}}{{option.selected ? '，已选择' : ''}}{{submitted && option.correct ? '，正确' : ''}}{{submitted && option.wrong ? '，错误' : ''}}" hover-class="{{disabled || submitted ? 'none' : 'option--pressed'}}" hover-start-time="20" hover-stay-time="180" bindtap="select">
+  <view class="option-key">{{option.key}}</view>
+  <view class="option-text">{{option.text}}</view>
+  <view wx:if="{{submitted && option.correct}}" class="state-icon correct-icon">✓</view>
+  <view wx:elif="{{submitted && option.wrong}}" class="state-icon wrong-icon">×</view>
+</button>

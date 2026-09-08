@@ -1,0 +1,93 @@
+<yy-page-shell title="{{viewMode === 'home' ? '复习' : viewMode === 'recall' ? '主动回忆' : '本次复习结果'}}" stage="review" kind="{{viewMode === 'home' ? 'home' : viewMode === 'result' ? 'result' : 'task'}}" tabbar="{{viewMode === 'home'}}" assistantMode="{{viewMode === 'home' ? 'free-query' : 'none'}}" hideAssistant="{{guideMode || viewMode !== 'home'}}">
+  <button wx:if="{{viewMode === 'recall'}}" slot="nav-left" class="nav-exit" hover-start-time="20" hover-stay-time="180" bindtap="exitRecall">退出</button>
+  <button wx:if="{{viewMode === 'result'}}" slot="nav-left" class="nav-exit" hover-start-time="20" hover-stay-time="180" bindtap="goHome">返回</button>
+  <view wx:if="{{viewMode === 'recall'}}" slot="nav-right" class="recall-progress" aria-label="第 {{currentRecallPosition}} 题，共 {{recallTotal}} 题">{{currentRecallPosition}} / {{recallTotal}}</view>
+  <block wx:if="{{viewMode === 'home'}}">
+    <yy-stage-context text="{{directionLabel}}" position="今日到期" bind:contexttap="openGoal" bind:notes="openNotes" bind:profile="openProfile" />
+    <yy-state wx:if="{{state !== 'ready'}}" type="{{state}}" theme="v3" title="{{state === 'conflict' ? '复习日程已更新' : ''}}" desc="{{errorMessage}}" actionText="{{state === 'loading' ? '' : '重新加载'}}" bind:retry="retry" />
+    <block wx:else>
+      <view class="review-hero">
+        <view class="hero-eyebrow">今日复习</view>
+        <view class="hero-count-row"><text class="hero-count yy-v3-number">{{learningCards.length}}</text><view><view class="hero-title">张学习卡任务</view><view class="hero-sub">每张卡包含 6 道主动回忆题，共 {{items.length}} 道待完成</view></view></view>
+        <yy-button wx:if="{{items.length}}" theme="v3" bind:tap="startRecall">开始主动回忆</yy-button>
+        <view wx:else class="hero-empty">{{nextReviewAt ? '下一次复习 ' + nextReviewAt : '当前没有到期复习任务'}}</view>
+      </view>
+
+      <view wx:if="{{learningCards.length}}" class="stability-panel">
+        <view class="panel-heading"><view><text>记忆稳定度</text><text>按知识卡汇总现有掌握证据</text></view><text class="period-chip">当前</text></view>
+        <view class="stability-list">
+          <view wx:for="{{learningCards}}" wx:key="sourceSessionId" class="stability-item {{item.highlighted ? 'highlighted' : ''}}" aria-role="button" aria-label="{{item.title}}，{{item.stageText}}，记忆稳定度 {{item.memoryStability}}%" data-session-id="{{item.sourceSessionId}}" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="openLearningCardFlow">
+            <view class="stability-copy">
+              <view class="stability-info"><text class="stability-title">{{item.title}}</text><text class="stability-meta">{{item.atomicKnowledgePointCount}} 个原子知识点 · {{item.stageText}}</text></view>
+              <text class="percent {{item.stabilityClass}} yy-v3-number">{{item.memoryStability}}%</text>
+            </view>
+            <view class="bar"><view class="fill {{item.stabilityClass}}" style="width:{{item.memoryStability}}%;" /></view>
+          </view>
+        </view>
+      </view>
+
+      <view wx:if="{{learningCards.length}}" class="flow-panel">
+        <view class="panel-heading"><view><text>学习卡待办</text><text>改错、间隔重做与主动回忆连续处理</text></view><text class="yy-v3-number">{{learningCards.length}}</text></view>
+        <view class="flow-list">
+          <view wx:for="{{learningCards}}" wx:key="sourceSessionId" class="flow-row" aria-role="button" data-session-id="{{item.sourceSessionId}}" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="openLearningCardFlow">
+            <view class="flow-copy"><text class="flow-title">{{item.title}}</text><text class="flow-meta">{{item.scoreText}} · {{item.stageText}}</text></view>
+            <text class="flow-action">{{item.nextWrongCaseId ? '继续改错' : item.dueReviewCount ? '开始复习' : (item.nextReviewText || '已排队')}}</text>
+          </view>
+        </view>
+      </view>
+      <view wx:if="{{pendingSyncCount}}" class="result-note">有 {{pendingSyncCount}} 条离线学习事件等待同步</view>
+    </block>
+  </block>
+
+  <block wx:elif="{{viewMode === 'recall'}}">
+    <yy-guide-coach wx:if="{{guideMode}}" eyebrow="{{guideCoach.eyebrow}}" title="{{guideCoach.title}}" desc="{{guideCoach.desc}}" answer="{{guideCoach.answer}}" bind:exit="exitGuide" />
+    <view class="question-dots"><view wx:for="{{recallSequence}}" wx:key="position" aria-current="{{item.state === 'current' ? 'step' : 'false'}}" aria-label="{{'第 ' + item.position + ' 题，' + (item.state === 'done' ? '已完成' : item.state === 'current' ? '当前题' : '未开始')}}" class="{{item.state}}">{{item.position}}</view></view>
+    <view class="recall-card">
+      <view class="recall-source">来源 · {{activeCardContext ? activeCardContext.title : currentItem.subject + ' · ' + currentItem.chapter}}</view>
+      <view wx:if="{{activeCardContext}}" class="point-context">当前回忆点 · {{currentItem.knowledgePoint}}</view>
+      <view class="recall-prompt">{{currentItem.prompt || currentItem.knowledgePoint}}</view>
+      <block wx:if="{{!answerVisible && !revealed}}">
+        <view class="answer-hidden">
+          <block wx:if="{{activeRecallEnabled || cardRecallMode}}"><view class="answer-editor-head"><text>手动作答（可选）</text><text>{{guideMode ? '本次不保存' : '自动保存'}}</text></view><textarea value="{{recallAnswer}}" maxlength="8000" placeholder="先写下你能回忆出的定义、机制和关键结论，再查看答案核对" disabled="{{answerBusy}}" bindinput="changeRecallAnswer" /></block>
+          <block wx:else><view>答案已隐藏</view><text>先在脑中完整回忆，再评价记忆程度</text></block>
+        </view>
+        <view wx:for="{{activeSession.followUps}}" wx:key="id" class="follow-up"><text>追问 {{item.position}}</text><view>{{item.question}}</view></view>
+        <button wx:if="{{followUpEnabled && activeSession && recallAnswer}}" class="follow-up-action" disabled="{{submittingId !== ''}}" hover-start-time="20" hover-stay-time="180" bindtap="requestFollowUp">基于当前回答追问</button>
+        <view class="reveal-policy">{{guideMode ? '请先在脑中回忆，再查看复习要点；本次查看与自评不会改变你的复习计划。' : '可直接查看答案；查看动作会被记录，随后选择本题回忆结果。'}}</view>
+      </block>
+      <view wx:elif="{{!(activeRecallEnabled || cardRecallMode)}}" class="recall-check">
+        <view class="check-title">{{reviewResult.pendingSync ? '离线评价已保存' : '核对要点'}}</view>
+        <view wx:if="{{reviewResult.reviewMaterial}}" class="check-copy">{{reviewResult.reviewMaterial.summary || reviewResult.reviewMaterial.body}}</view>
+        <view wx:else class="check-copy">{{reviewResult.pendingSync ? '联网同步后更新复习日程；当前不补写标准答案。' : '当前版本没有已发布的审核内容。'}}</view>
+        <view wx:if="{{reviewResult.nextReviewAt || reviewResult.learningEvidence.nextReviewAt}}" class="due-sub">下次复习：{{reviewResult.nextReviewAt || reviewResult.learningEvidence.nextReviewAt}}</view>
+      </view>
+      <view wx:elif="{{!answerVisible}}" class="answer-awaiting">
+        <view class="answer-seal">已完成自评</view>
+        <text>参考答案仍保持收起，按“查看答案”后再核对。</text>
+      </view>
+      <view wx:else class="recall-check">
+        <view wx:if="{{recallAnswer}}" class="recall-response"><text>你的回答</text><text>{{recallAnswer}}</text></view>
+        <view class="check-title">复习要点</view>
+        <block wx:if="{{activeRecallEnabled || cardRecallMode}}"><view wx:for="{{answerDisplay.standardPoints}}" wx:key="*this" class="standard-point">{{index + 1}}. {{item}}</view><view wx:for="{{answerDisplay.followUps}}" wx:key="id" class="follow-up-result"><text>追问 {{item.position}} · {{item.basis}}</text><view wx:for="{{item.standardPoints}}" wx:key="*this">{{item}}</view></view></block>
+        <view wx:elif="{{reviewResult.reviewMaterial}}" class="check-copy">{{reviewResult.reviewMaterial.summary || reviewResult.reviewMaterial.body}}</view>
+        <view wx:else class="check-copy">{{reviewResult.pendingSync ? '联网同步后更新复习日程；当前不补写标准答案。' : '当前版本没有已发布的审核内容。'}}</view>
+        <view wx:if="{{revealed}}"><view wx:if="{{reviewResult.nextReviewAt || reviewResult.learningEvidence.nextReviewAt}}" class="due-sub">下次复习：{{reviewResult.nextReviewAt || reviewResult.learningEvidence.nextReviewAt}}</view></view>
+      </view>
+      <view class="recall-tools {{activeRecallEnabled || cardRecallMode ? 'three-tools' : 'two-tools'}}">
+        <button wx:if="{{!guideMode}}" aria-label="查看或编辑当前主动回忆笔记" hover-start-time="20" hover-stay-time="180" bindtap="openNotes"><image src="/images/prototype/note.svg" /><text>查看笔记</text></button>
+        <button wx:if="{{activeRecallEnabled || cardRecallMode}}" class="answer-reveal-action" style="{{guideMode ? 'grid-column:1 / -1;' : ''}}" aria-label="{{answerBusy ? '正在读取答案' : answerVisible ? '答案已查看' : '查看答案'}}" disabled="{{answerVisible || answerBusy || submittingId || !activeSession}}" hover-start-time="20" hover-stay-time="180" bindtap="revealAnswer"><image src="/images/prototype/eye.svg" /><text>{{answerBusy ? '读取中' : answerVisible ? '答案已查看' : '查看答案'}}</text></button>
+      </view>
+    </view>
+    <view wx:if="{{!revealed && (answerVisible || !(activeRecallEnabled || cardRecallMode))}}" class="recall-rating-panel"><text class="recall-rating-label">回忆结果如何？</text><view class="rating-actions"><button disabled="{{submittingId !== ''}}" data-value="FORGOT" hover-start-time="20" hover-stay-time="180" bindtap="recall">忘记</button><button disabled="{{submittingId !== ''}}" data-value="VAGUE" hover-start-time="20" hover-stay-time="180" bindtap="recall">模糊</button><button disabled="{{submittingId !== ''}}" data-value="REMEMBERED" hover-start-time="20" hover-stay-time="180" bindtap="recall">记住了</button></view></view>
+    <view wx:if="{{!guideMode && revealed && memoryCardsEnabled && activeRecallEnabled}}" class="memory-card-tool"><view class="check-title">记忆卡片候选</view><view wx:if="{{cardSaved}}" class="result-note">卡片已由你确认，并保留来源版本。</view><block wx:elif="{{cardDraft}}"><input value="{{cardQuestion}}" maxlength="1000" placeholder="卡片问题" bindinput="changeCardQuestion" /><textarea value="{{cardAnswer}}" maxlength="4000" placeholder="卡片答案" bindinput="changeCardAnswer" /><view class="card-actions"><button disabled="{{submittingId !== ''}}" hover-start-time="20" hover-stay-time="180" bindtap="discardCardDraft">丢弃</button><button disabled="{{submittingId !== '' || !cardQuestion || !cardAnswer}}" hover-start-time="20" hover-stay-time="180" bindtap="confirmCardDraft">确认卡片</button></view></block><button wx:else class="follow-up-action" disabled="{{submittingId !== ''}}" hover-start-time="20" hover-stay-time="180" bindtap="createCardDraft">生成可编辑候选</button></view>
+    <view wx:if="{{errorMessage}}" class="result-note">{{errorMessage}}</view>
+  </block>
+
+  <block wx:else>
+    <view class="result-kicker">{{sessionItems.length}} 项复习已处理</view><view class="result-title">本次复习结果</view>
+    <view class="result-stats"><view><text class="remembered yy-v3-number">{{sessionStats.remembered}}</text><text>记住了</text></view><view><text class="vague yy-v3-number">{{sessionStats.vague}}</text><text>模糊</text></view><view><text class="forgot yy-v3-number">{{sessionStats.forgot}}</text><text>忘记</text></view></view>
+    <view wx:if="{{weakItems.length}}" class="weak-card"><view class="weak-title">需加强</view><view wx:for="{{weakItems}}" wx:key="id" class="weak-row"><text>{{item.displayName}}</text><text>{{item.subject}}</text></view></view>
+    <view class="result-note">评价已更新复习日程；较弱内容会重新进入补学与验证。</view>
+    <yy-button theme="v3" bind:tap="openClass">去补学</yy-button><button class="result-secondary" hover-start-time="20" hover-stay-time="180" bindtap="openPractice">去做题验证</button>
+  </block>
+</yy-page-shell>

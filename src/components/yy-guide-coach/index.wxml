@@ -1,0 +1,32 @@
+<view
+  class="guide-coach yy-v3-theme"
+  aria-role="note"
+  aria-label="{{eyebrow}}。为什么做：{{title}}。现在怎么做：{{desc}}{{answer ? '。引导答案：' + answer : ''}}"
+>
+  <view class="guide-header">
+    <view class="guide-meta"><text class="guide-eyebrow">{{eyebrow}}</text><text class="guide-sandbox">体验模式</text></view>
+    <button
+      class="guide-exit"
+      hover-class="yy-v3-interactive--pressed"
+      hover-start-time="20"
+      hover-stay-time="180"
+      bindtap="exitGuide"
+      aria-label="退出本次体验"
+    ><text class="guide-exit-label">退出体验</text></button>
+  </view>
+
+  <view class="guide-main">
+    <view wx:if="{{title}}" class="guide-section guide-section--why">
+      <text class="guide-section-label">为什么做</text>
+      <text class="guide-title">{{title}}</text>
+    </view>
+    <view wx:if="{{desc}}" class="guide-section guide-section--action">
+      <text class="guide-section-label">现在怎么做</text>
+      <text class="guide-desc">{{desc}}</text>
+    </view>
+    <view wx:if="{{answer}}" class="guide-answer">
+      <text class="guide-answer-label">引导答案</text>
+      <text class="guide-answer-text">{{answer}}</text>
+    </view>
+  </view>
+</view>

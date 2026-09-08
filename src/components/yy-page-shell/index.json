@@ -1,0 +1,9 @@
+{
+  "component": true,
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "yy-nav": "/components/yy-nav/index",
+    "yy-ai-assistant": "/components/yy-ai-assistant/index",
+    "yy-free-query-fab": "/components/yy-free-query-fab/index"
+  }
+}

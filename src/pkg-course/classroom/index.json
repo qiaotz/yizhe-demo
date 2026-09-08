@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "知识课堂",
+  "usingComponents": {
+    "yy-ai-assistant": "/components/yy-ai-assistant/index",
+    "yy-guide-coach": "/components/yy-guide-coach/index"
+  }
+}

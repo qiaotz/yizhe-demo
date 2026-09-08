@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "间隔重做",
+  "usingComponents": {
+    "yy-guide-coach": "/components/yy-guide-coach/index"
+  }
+}

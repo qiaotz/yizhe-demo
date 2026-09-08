@@ -1,0 +1,13 @@
+/* Legacy rules are inherited from app.wxss through apply-shared. */
+.yy-card.theme-v3 {
+  margin: 16rpx 0;
+  padding: 28rpx;
+  border: 1rpx solid var(--yy-v3-line, rgba(255,255,255,.08));
+  border-radius: var(--yy-v3-radius-card, 32rpx);
+  color: var(--yy-v3-text, #F2F5F8);
+  background: var(--yy-v3-surface, #151F2B);
+  box-shadow: var(--yy-v3-shadow-panel, none);
+}
+.yy-card.theme-v3.compact { padding: 24rpx; }
+.yy-card.theme-v3.tone-raised { background: var(--yy-v3-surface-raised, #1A2634); }
+.yy-card.theme-v3.tone-danger { border-color: rgba(239, 107, 115, .45); }

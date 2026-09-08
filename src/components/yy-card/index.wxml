@@ -1,0 +1,1 @@
+<view class="yy-card theme-{{theme}} tone-{{tone}} {{compact ? 'compact' : ''}}"><slot /></view>

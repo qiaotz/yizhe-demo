@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "yy-button": "/components/yy-button/index",
+    "yy-state": "/components/yy-state/index"
+  }
+}

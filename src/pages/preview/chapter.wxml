@@ -1,0 +1,77 @@
+<yy-page-shell title="章节概览" back stage="preview" kind="home" tabbar="{{false}}" hideAssistant="{{true}}">
+  <yy-guide-coach wx:if="{{guideMode}}" eyebrow="{{guideCoach.eyebrow}}" title="{{guideCoach.title}}" desc="{{guideCoach.desc}}" answer="{{guideCoach.answer}}" bind:exit="exitGuide" />
+  <yy-state wx:if="{{state !== 'ready'}}" type="{{state}}" theme="v3" title="{{state === 'conflict' ? '内容版本已更新' : ''}}" desc="{{errorMessage}}" actionText="{{state === 'loading' ? '' : '重新加载'}}" bind:retry="retry" />
+  <view wx:else class="overview-card">
+    <view class="eyebrow">章节进度</view>
+    <view class="overview-title">{{detail.subject}} · {{detail.name}}</view>
+    <view class="overview-meta"><text class="yy-v3-number">{{masterySummary.totalCount}}</text> 个{{detail.nodeLabel || '知识点'}} · {{lessonProgress.length}} 个课时 · 预计 {{detail.estimatedMinutes}} 分钟</view>
+    <view wx:if="{{selectedPoint}}" class="selected-context">当前选择 · {{selectedPoint.name}}</view>
+    <view wx:if="{{syncState === 'offline'}}" class="sync-note">{{errorMessage}}</view>
+
+    <view class="progress-summary">
+      <view class="summary-item mastered"><view class="summary-dot" /><text class="summary-label">已掌握</text><text class="summary-value yy-v3-number">{{masterySummary.masteredCount}}</text></view>
+      <view class="summary-item learning"><view class="summary-dot" /><text class="summary-label">学习中</text><text class="summary-value yy-v3-number">{{masterySummary.learningCount}}</text></view>
+      <view class="summary-item weak"><view class="summary-dot" /><text class="summary-label">薄弱</text><text class="summary-value yy-v3-number">{{masterySummary.weakCount}}</text></view>
+      <view class="summary-item unseen"><view class="summary-dot" /><text class="summary-label">未学习</text><text class="summary-value yy-v3-number">{{masterySummary.unseenCount}}</text></view>
+    </view>
+
+    <view class="lesson-progress-list">
+      <view wx:for="{{lessonProgress}}" wx:key="businessKey" class="lesson-progress-card {{expandedLessonKey === item.businessKey ? 'expanded' : ''}}">
+        <view
+          class="lesson-progress-head"
+          aria-role="button"
+          aria-label="{{item.title}}，{{item.progressedCount}} / {{item.knowledgePointCount}} 已有学习记录，{{expandedLessonKey === item.businessKey ? '已展开' : '已折叠'}}"
+          aria-expanded="{{expandedLessonKey === item.businessKey}}"
+          data-lesson-key="{{item.businessKey}}"
+          hover-class="yy-v3-interactive--pressed"
+          hover-start-time="20"
+          hover-stay-time="180"
+          bindtap="toggleLesson"
+        >
+          <view class="lesson-copy">
+            <view class="lesson-heading-row">
+              <view class="lesson-index yy-v3-number">{{item.indexLabel}}</view>
+              <view class="lesson-title">{{item.title}}</view>
+            </view>
+            <view class="lesson-meta"><text class="yy-v3-number">{{item.progressedCount}} / {{item.knowledgePointCount}}</text> 已有学习记录</view>
+            <view class="knowledge-matrix" aria-label="{{item.title}}共{{item.knowledgePointCount}}个{{detail.nodeLabel || '知识点'}}">
+              <view wx:for="{{item.points}}" wx:for-item="point" wx:key="pointKey" class="matrix-cell {{point.stateClass}} {{point.selected ? 'current' : ''}}" />
+            </view>
+          </view>
+          <view class="lesson-toggle">{{expandedLessonKey === item.businessKey ? '收起' : '展开'}}</view>
+        </view>
+        <view wx:if="{{expandedLessonKey === item.businessKey}}" class="lesson-point-list">
+          <view
+            wx:for="{{item.points}}"
+            wx:for-item="point"
+            wx:key="pointKey"
+            class="lesson-point-row {{point.selected ? 'current' : ''}}"
+            aria-role="button"
+            aria-label="{{point.name}}，{{point.stateLabel}}"
+            aria-current="{{point.selected}}"
+            data-lesson-key="{{item.businessKey}}"
+            data-point-key="{{point.pointKey}}"
+            hover-class="yy-v3-interactive--pressed"
+            hover-start-time="20"
+            hover-stay-time="180"
+            bindtap="selectPoint"
+          >
+            <view class="point-status {{point.stateClass}}" />
+            <text class="point-name">{{point.name}}</text>
+            <view class="point-state {{point.stateClass}}">{{point.stateLabel}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{selectedPoint}}" class="node-detail">
+      <view class="node-detail-label">当前{{detail.nodeLabel || '知识点'}} · {{selectedPoint.lessonTitle}}</view>
+      <view class="node-detail-head"><view class="node-title">{{selectedPoint.name}}</view><view class="point-state {{selectedPoint.stateClass}}">{{selectedPoint.stateLabel}}</view></view>
+      <view class="node-desc">{{selectedPoint.summary || '完整讲义将在上课阶段展开。'}}</view>
+    </view>
+    <view class="map-hint">每格代表 1 个{{detail.nodeLabel || '知识点'}} · 点击课时可查看名称与学习状态</view>
+    <view wx:if="{{!diagnosticAvailable && !errorMessage}}" class="sync-note error">当前学习卡暂缺3道审核通过的检测题，请稍后再试</view>
+    <view wx:if="{{errorMessage && !syncState}}" class="sync-note error">{{errorMessage}}</view>
+    <yy-button theme="v3" loading="{{starting}}" disabled="{{!diagnosticAvailable || syncState === 'offline'}}" bind:tap="startDetection">{{guideMode ? '开始预习检测 · 1题' : '开始快速检测 · 3题约2分钟'}}</yy-button>
+  </view>
+</yy-page-shell>

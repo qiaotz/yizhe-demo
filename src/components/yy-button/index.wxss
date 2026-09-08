@@ -1,0 +1,39 @@
+/* Legacy rules are inherited from app.wxss through apply-shared. */
+.yy-button.theme-v3 {
+  display: flex;
+  width: 100%;
+  min-height: 96rpx;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  padding: 18rpx 28rpx;
+  border: 1rpx solid transparent;
+  border-radius: var(--yy-v3-radius-control, 24rpx);
+  color: var(--yy-v3-accent-ink, #071016);
+  background: var(--yy-v3-stage, var(--yy-v3-focus, #45A3FF));
+  font-size: var(--yy-v3-type-card, 28rpx);
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-align: center;
+  transform-origin: center;
+  transition: transform var(--yy-v3-duration-fast, 160ms) var(--yy-v3-ease-out, ease-out), opacity var(--yy-v3-duration-fast, 160ms) var(--yy-v3-ease-out, ease-out), border-color var(--yy-v3-duration-fast, 160ms) var(--yy-v3-ease-out, ease-out), background-color var(--yy-v3-duration-fast, 160ms) var(--yy-v3-ease-out, ease-out);
+}
+
+/* Restore mini-program box sizing while preserving the real native button. */
+.yy-button.theme-v3 > .weapp-btn { position:absolute; inset:0; display:flex; width:100%; height:100%; min-height:0; box-sizing:border-box; align-items:inherit; justify-content:inherit; gap:inherit; padding:inherit; border:0; border-radius:inherit; color:inherit; background:transparent; font:inherit; line-height:inherit; text-align:inherit; }
+.yy-button.theme-v3 > .weapp-btn > .weapp-btn__content { display:flex; width:100%; height:100%; min-width:0; align-items:inherit; justify-content:inherit; gap:inherit; }
+.yy-button.theme-v3 > .weapp-btn > .weapp-btn__content > .weapp-btn__text { display:contents; }
+.yy-button.theme-v3::after { display: none; }
+.yy-button.theme-v3.tone-orange { color: var(--yy-v3-accent-ink, #071016); background: var(--yy-v3-class, #D6A84B); }
+.yy-button.theme-v3.tone-outline,
+.yy-button.theme-v3.tone-secondary { color: var(--yy-v3-text, #F2F5F8); border-color: var(--yy-v3-line-strong, rgba(255,255,255,.15)); background: var(--yy-v3-surface-raised, #1A2634); }
+.yy-button.theme-v3.tone-text { min-height: var(--yy-v3-touch, 88rpx); color: var(--yy-v3-text-secondary, #B7C1CE); background: transparent; }
+.yy-button.theme-v3.tone-danger { color: var(--yy-v3-accent-ink, #071016); background: var(--yy-v3-danger, #EF6B73); }
+.yy-button.theme-v3.yy-button--pressed { opacity: var(--yy-v3-pressed-opacity, .94); transform: scale(.985); }
+/* Web Runtime serializes boolean component properties as disabled="false". */
+.yy-button.theme-v3[disabled]:not([disabled="false"]) { color: var(--yy-v3-text-disabled, #8997A8); border-color: var(--yy-v3-line, rgba(255,255,255,.08)); background: var(--yy-v3-surface-muted, #101821); opacity: 1; }
+
+@media (max-width: 344px) {
+  .yy-button.theme-v3 { min-height: 44px; }
+}

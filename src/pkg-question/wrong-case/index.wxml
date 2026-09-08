@@ -1,0 +1,61 @@
+<yy-page-shell title="{{viewState === 'reason' ? '错题归因' : viewState === 'waiting' ? '等待重做' : viewState === 'retest' ? '间隔重做' : '已消灭'}}" back="{{!guideMode}}" stage="correction" kind="{{viewState === 'result' ? 'result' : 'task'}}" tabbar="{{false}}" fixedActions="{{state === 'ready'}}" hideAssistant="{{true}}">
+  <yy-state wx:if="{{state !== 'ready'}}" type="{{state}}" theme="v3" title="{{state === 'empty' ? '改错记录已更新' : ''}}" desc="{{state === 'empty' ? '当前记录已不存在于待处理队列，可能已在其他设备完成或清除。' : errorMessage}}" actionText="{{state === 'loading' ? '' : '刷新状态'}}" bind:retry="retry" />
+  <block wx:else>
+    <yy-guide-coach wx:if="{{guideMode}}" eyebrow="{{guideCoach.eyebrow}}" title="{{guideCoach.title}}" desc="{{guideCoach.desc}}" answer="{{guideCoach.answer}}" bind:exit="exitGuide" />
+    <block wx:if="{{viewState === 'reason'}}">
+      <view class="case-meta"><text>{{item.questionType === 'MULTIPLE' ? '多选' : '单选'}} · {{item.sourceText}}</text><text class="attempt-chip">第 {{item.wrongCount}} 次出错</text></view>
+      <view class="evidence-card">
+        <view class="case-stem">{{item.stem}}</view>
+        <view class="answer-option {{option.stateClass}}" wx:for="{{item.options}}" wx:for-item="option" wx:key="key">
+          <text class="option-key">{{option.key}}</text><text class="option-copy">{{option.content}}</text>
+          <text wx:if="{{option.correct}}" class="option-state">正确</text><text wx:elif="{{option.selected}}" class="option-state">你的答案</text>
+        </view>
+        <view class="answer-summary"><text class="wrong-answer">回答 {{item.selectedAnswerText}}</text><text class="correct-answer">正确答案 {{item.correctAnswerText}}</text></view>
+        <view class="explanation-block"><view class="explanation-title">解析</view><view class="explanation-copy">{{item.explanation || '当前题目暂无已审核解析。'}}</view></view>
+        <view class="case-history">最近错误 {{item.lastWrongText || '时间未返回'}} · 已归档 {{item.evidenceCount}} 条学习证据</view>
+      </view>
+
+      <view wx:if="{{!guideMode}}" class="case-note-entry" aria-role="button" aria-label="查看或编辑当前错题归因笔记" hover-class="yy-v3-interactive--pressed" hover-start-time="20" hover-stay-time="180" bindtap="openCaseNote">
+        <image src="/images/prototype/note.svg" mode="aspectFit" />
+        <view><view class="case-note-title">错因记录永久保留</view><text>确认后可另行整理为可编辑的学习笔记</text></view>
+        <text class="case-note-action">整理为笔记</text>
+      </view>
+
+      <view class="flow-track">
+        <view wx:for="{{['归因并记录','重做即验证','消灭']}}" wx:key="*this" class="flow-node flow-node-three {{flowStep > index + 1 ? 'done' : flowStep === index + 1 ? 'current' : ''}}">
+          <view class="flow-dot">{{index + 1}}</view><text>{{item}}</text><view wx:if="{{index < 2}}" class="flow-line" />
+        </view>
+      </view>
+
+      <view class="reason-section {{reasonAttention ? 'needs-reason' : ''}}">
+        <view class="reason-heading"><view class="section-title">确认错误原因</view><button wx:if="{{aiWrongReasonEnabled}}" class="ai-summary-button {{aiSummaryState}}" loading="{{aiSummaryState === 'loading'}}" disabled="{{aiSummaryState === 'loading' || saving}}" aria-busy="{{aiSummaryState === 'loading'}}" aria-label="{{guideMode ? 'AI帮我归因' : 'AI帮我总结'}}" hover-start-time="20" hover-stay-time="180" bindtap="generateErrorCorrection">{{aiSummaryState === 'loading' ? '正在分析…' : aiSummaryState === 'success' ? (guideMode ? '重新生成建议' : '重新帮我总结') : (guideMode ? '✦ AI帮我归因' : '✦ AI帮我总结')}}</button></view>
+        <view wx:if="{{guideMode && aiWrongReasonEnabled}}" class="ai-demo-note" aria-role="note"><text>AI 归因体验</text><text>本次使用预先准备的建议，不消耗额度，也不会保存到 AI 历史；内容可以修改。</text></view>
+        <view class="reason-pills"><button wx:for="{{reasons}}" wx:key="code" class="{{selectedReason === item.code ? 'active' : ''}}" data-code="{{item.code}}" aria-pressed="{{selectedReason === item.code}}" aria-label="{{item.label + (guideMode && item.code === guideReasonCode ? '，引导选择' : '') + (selectedReason === item.code ? '，已选择' : '')}}" hover-start-time="20" hover-stay-time="180" bindtap="selectReason"><text class="reason-label">{{item.label}}</text><text wx:if="{{guideMode && item.code === guideReasonCode}}" class="guide-option-hint">引导选择</text></button></view>
+        <view wx:if="{{aiSummaryMessage}}" class="ai-summary-message {{aiSummaryState}}" aria-role="status" aria-live="polite">{{aiSummaryMessage}}</view>
+        <view class="record-panel">
+          <view class="field-label">我错在哪里 <text>*</text></view>
+          <textarea class="record-input" maxlength="500" value="{{reasonText}}" bindinput="inputReason" aria-label="我错在哪里" placeholder="记录误区或当时的判断思路" />
+          <view class="field-label">正确怎么想 <text>*</text></view>
+          <textarea class="record-input" maxlength="1000" value="{{correctPrinciple}}" bindinput="inputPrinciple" aria-label="正确怎么想" placeholder="用自己的话写出正确判断依据" />
+          <view class="field-label">下次怎么判断 <text>*</text></view>
+          <textarea class="record-input" maxlength="1000" value="{{futureSignal}}" bindinput="inputSignal" aria-label="下次怎么判断" placeholder="记录题干中的识别线索和下一步判断" />
+        </view>
+      </view>
+    </block>
+
+    <view wx:elif="{{viewState === 'waiting'}}" class="waiting-card waiting-screen">
+      <view class="clock-ring"><image src="/images/prototype/clock-correction.svg" /></view>
+      <view class="waiting-title">{{guideMode ? '本次错因已确认' : '归因与记录已保存'}}</view>
+      <view class="waiting-copy">{{guideMode ? '这次体验不会计入错题记录。接下来直接进入间隔重做，用同一道题检验自己能否避开原来的误区。' : '归因记录已经永久保存。原题在间隔期结束后重新出现，这次独立重做本身就是验证。'}}</view>
+      <view class="flow-mini"><text class="done">1 归因并记录</text><text class="current">2 重做即验证</text><text>3 消灭</text></view>
+      <view class="due-panel"><view><text>原题重做开放</text><text>{{item.dueText || '时间未返回'}}</text></view><text class="countdown">{{item.dueCountdown}}</text></view>
+      <button wx:if="{{!guideMode}}" class="secondary-action" hover-start-time="20" hover-stay-time="180" bindtap="relearn">{{item.relearn ? '先补学：' + item.relearn.title : '已进入等待队列'}}</button>
+      <button wx:if="{{!guideMode}}" class="secondary-action note-secondary" bindtap="openCaseNote">整理错因为笔记</button>
+      <button wx:if="{{!guideMode}}" class="review-link edit-reason-link" bindtap="editReason">更新错因记录</button>
+      <button wx:if="{{!guideMode}}" class="review-link" hover-start-time="20" hover-stay-time="180" bindtap="openReviewTab">查看本知识卡复习安排</button>
+    </view>
+    <view wx:elif="{{viewState === 'retest'}}" class="waiting-card"><view class="clock-ring"><image src="/images/prototype/check-review.svg" /></view><view class="waiting-title">间隔重做已开放</view><view class="waiting-copy">请独立重做原题。答对即验证通过并进入“已消灭”；答错则保留记录，24 小时后再次重做。</view><button class="secondary-action note-secondary" bindtap="openCaseNote">整理错因为笔记</button><button class="review-link edit-reason-link" bindtap="editReason">更新错因记录</button></view>
+    <view wx:else class="waiting-card"><view class="clock-ring ready"><image src="/images/prototype/check-review.svg" /></view><view class="waiting-title">这道错题已消灭</view><view class="waiting-copy">原题间隔重做正确，完整错因与验证证据仍会永久保留，随时可以回来查看。</view><button class="secondary-action note-secondary" bindtap="openCaseNote">整理错因为笔记</button></view>
+  </block>
+  <view slot="actions"><yy-button wx:if="{{state === 'ready'}}" theme="v3" loading="{{saving}}" disabled="{{viewState === 'reason' && (!selectedReason || (guideMode && !aiAssistedDraft))}}" bind:tap="primaryAction">{{viewState === 'reason' ? (guideMode ? (aiAssistedDraft ? '确认本次错因' : '请先体验 AI 归因') : '确认归因并保存记录') : viewState === 'waiting' ? (guideMode ? '开始间隔重做' : '返回改错首页') : viewState === 'retest' ? '开始间隔重做' : '返回改错首页'}}</yy-button></view>
+</yy-page-shell>

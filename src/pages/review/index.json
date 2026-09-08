@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "复习",
+  "usingComponents": {
+    "yy-guide-coach": "/components/yy-guide-coach/index"
+  }
+}

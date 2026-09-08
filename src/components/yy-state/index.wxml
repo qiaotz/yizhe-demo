@@ -1,0 +1,11 @@
+<view class="state theme-{{theme}} {{compact ? 'compact' : ''}}" aria-role="status" aria-live="polite">
+  <view class="state-symbol {{type}}" aria-hidden="true">
+    <view wx:if="{{type === 'loading'}}" class="state-spinner"></view>
+    <image wx:else class="state-icon" src="{{icon}}" mode="aspectFit" aria-hidden="true" />
+  </view>
+  <view class="state-title">{{title || defaultTitle}}</view>
+  <view class="state-desc">{{desc || defaultDesc}}</view>
+  <view wx:if="{{actionText}}" class="state-action">
+    <yy-button tone="outline" theme="{{theme}}" ariaLabel="{{actionText}}" bind:tap="retry">{{actionText}}</yy-button>
+  </view>
+</view>

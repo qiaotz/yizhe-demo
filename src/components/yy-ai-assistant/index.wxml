@@ -1,0 +1,109 @@
+<view class="ai-root yy-v3-theme">
+  <button class="ai-trigger {{entryVariant === 'knowledge-card' ? 'knowledge-card' : ''}} {{tabbar ? 'with-tabbar' : ''}} {{fixedActions ? 'with-actions' : ''}} {{visible ? 'is-hidden' : ''}}" aria-label="{{entryVariant === 'knowledge-card' ? '打开AI解析' : '打开上下文问答'}}" hover-class="ai-trigger-hover" bindtap="open">
+    <view class="ai-trigger-visual" aria-hidden="true">
+      <image src="/images/prototype/sparkle.svg" mode="aspectFit" />
+      <text wx:if="{{entryVariant === 'knowledge-card'}}">AI解析</text>
+    </view>
+  </button>
+
+  <view wx:if="{{visible}}" class="ai-panel panel-{{panelMode}}" role="dialog" aria-label="AI解析" catchtap="noop">
+    <view class="panel-grip" aria-hidden="true"><view /></view>
+    <view class="ai-header">
+      <view class="ai-header-main">
+        <view class="ai-title"><image class="ai-title-icon" src="/images/prototype/sparkle.svg" mode="aspectFit" />{{entryVariant === 'knowledge-card' ? 'AI解析' : '上下文问答'}}</view>
+        <view wx:if="{{demoMode}}" class="ai-subtitle">体验解析 · 不消耗 AI 额度</view>
+        <view wx:else class="ai-subtitle">{{entryVariant === 'knowledge-card' ? '边看边问，聚焦当前知识点' : '当前方向 · 审核资料'}}</view>
+      </view>
+      <view class="ai-header-actions">
+        <button class="panel-collapse panel-size-toggle" aria-label="{{panelMode === 'expanded' ? '收起回答' : '展开完整回答'}}" bindtap="expandPanel"><text>{{panelMode === 'expanded' ? '收起' : '展开'}}</text><image class="panel-size-icon {{panelMode === 'expanded' ? '' : 'expand'}}" src="/images/prototype/chevron-compact.svg" mode="aspectFit" aria-hidden="true" /></button>
+        <button class="icon-close" aria-label="关闭AI解析" bindtap="close"><image src="/images/icons/close.png" /></button>
+      </view>
+    </view>
+
+    <yy-state wx:if="{{loading}}" type="loading" theme="v3" compact />
+    <block wx:elif="{{!available}}">
+      <yy-state type="{{state === 'offline' ? 'offline' : state === 'auth' ? 'auth' : 'service'}}" theme="v3" compact title="{{state === 'quota' ? 'AI 额度已用完' : state === 'budget' ? 'AI 本期已关闭' : 'AI 暂不可用'}}" desc="{{availabilityText}}" />
+      <view class="availability-actions">
+        <button wx:if="{{state === 'auth'}}" bindtap="goLogin">重新登录</button>
+        <button wx:else bindtap="open">重新检查</button>
+        <button bindtap="close">返回当前内容</button>
+      </view>
+    </block>
+    <block wx:else>
+      <view wx:if="{{entryVariant === 'knowledge-card'}}" class="ai-targets">
+        <view class="target-heading"><view class="target-heading-mark" /><text>解析当前板块</text><view class="target-heading-rule" /></view>
+        <view class="target-list"><button wx:for="{{targetOptions}}" wx:key="id" data-id="{{item.id}}" class="target-button {{item.label === targetLabel ? 'active' : ''}}" bindtap="selectTarget">{{item.label}}</button></view>
+        <view wx:if="{{contextError}}" class="ai-error">{{contextError}}</view>
+        <button class="primary-cta" aria-label="✨ 解析{{targetLabel}}" disabled="{{state === 'streaming' || state === 'loading' || contextError !== ''}}" bindtap="parseCurrent"><image class="cta-icon" src="/images/prototype/sparkle.svg" mode="aspectFit" aria-hidden="true" /><text>{{demoMode ? '帮我解析这个板块' : '解析' + (targetLabel === '核心规律' ? '当前板块' : (targetLabel || '当前板块'))}}</text></button>
+      </view>
+      <view class="quick-list" wx:if="{{!demoMode && state !== 'streaming' && state !== 'loading' && !doneState}}">
+        <button wx:for="{{quickQuestions}}" wx:key="id" data-question="{{item.question}}" data-intent="{{item.analysisIntent}}" class="quick-question quick-question-{{index}}" bindtap="chooseQuick">
+          <image wx:if="{{index === 0}}" src="/images/prototype/help.svg" mode="aspectFit" aria-hidden="true" />
+          <image wx:elif="{{index === 1}}" src="/images/prototype/bookmark-memory.svg" mode="aspectFit" aria-hidden="true" />
+          <image wx:else src="/images/prototype/guess.svg" mode="aspectFit" aria-hidden="true" />
+          <text>{{item.label}}</text>
+        </button>
+      </view>
+      <view wx:if="{{!demoMode}}" class="input-shell">
+        <textarea class="ai-input" value="{{question}}" maxlength="300" disabled="{{state === 'streaming' || state === 'loading'}}" adjust-position cursor-spacing="160" placeholder="基于当前页面内容继续提问…" bindinput="inputQuestion" />
+        <view class="input-meta">
+          <text>{{question.length || 0}}/300</text>
+          <button wx:if="{{state !== 'streaming' && state !== 'loading'}}" class="send-button" disabled="{{question.length < 2 || contextError !== ''}}" aria-label="发送问题" bindtap="submit"><image class="send-icon" src="/images/prototype/send.svg" mode="aspectFit" aria-hidden="true" /></button>
+          <button wx:elif="{{state === 'streaming'}}" class="send-button stop" aria-label="停止生成" bindtap="stop">■</button>
+        </view>
+      </view>
+      <view class="privacy-note"><image src="/images/prototype/shield.svg" mode="aspectFit" aria-hidden="true" />{{demoMode ? '本次体验使用预先准备的解析内容，不消耗额度，也不会保存到 AI 历史。' : '不要输入真实患者信息，AI 不提供诊断、处方或就医建议。'}}</view>
+
+      <view wx:if="{{answer || state === 'streaming' || doneState}}" class="answer-region" aria-live="polite">
+        <view class="answer-status {{outcome}}">{{answerStatus}}</view>
+        <view class="answer-text">{{answer}}</view>
+      </view>
+
+      <view wx:if="{{citations.length}}" class="citation-list">
+        <view class="section-label">引用依据</view>
+        <view wx:for="{{citations}}" wx:key="citationId" class="citation-row {{item.revoked ? 'revoked' : ''}}">
+          <button data-id="{{item.citationId}}" bindtap="toggleCitation">
+            <text>[{{item.ordinal}}] {{item.title}}</text>
+            <text>{{expandedCitation === item.citationId ? '收起' : '查看'}}</text>
+          </button>
+          <view wx:if="{{expandedCitation === item.citationId}}" class="citation-detail">
+            <view>{{item.revoked ? '引用内容已撤回，原文不再展示。' : item.supportingExcerpt}}</view>
+            <text wx:if="{{!item.revoked}}">内容版本 {{item.contentVersion}} · 支持分 {{item.supportScore}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view wx:if="{{errorMessage}}" class="ai-error" aria-live="polite">{{errorMessage}}</view>
+      <view wx:if="{{state === 'interrupted' || state === 'offline' || state === 'auth'}}" class="retry-row">
+        <button wx:if="{{state === 'auth'}}" bindtap="goLogin">重新登录</button>
+        <button wx:else bindtap="retry">恢复回答</button>
+        <button class="quiet-action" bindtap="close">返回当前内容</button>
+      </view>
+      <view wx:elif="{{state === 'canceled' || state === 'unavailable' || state === 'quota' || state === 'budget'}}" class="retry-row">
+        <button bindtap="retry">重新提问</button>
+        <button class="quiet-action" bindtap="close">返回当前内容</button>
+      </view>
+
+      <view wx:if="{{doneState && !demoMode}}" class="feedback-region">
+        <view class="feedback-title"><text class="feedback-title-mark">?</text><text>这条回答有帮助吗？</text></view>
+        <view class="segmented">
+          <button class="{{feedback === 'helpful' ? 'active' : ''}}" data-value="helpful" bindtap="chooseFeedback">有帮助</button>
+          <button class="{{feedback === 'unhelpful' ? 'active' : ''}}" data-value="unhelpful" bindtap="chooseFeedback">无帮助</button>
+        </view>
+        <view wx:if="{{feedback === 'unhelpful'}}" class="reason-list">
+          <button class="{{feedbackReason === 'INACCURATE' ? 'active' : ''}}" data-value="INACCURATE" bindtap="chooseReason">不准确</button>
+          <button class="{{feedbackReason === 'CITATION_UNSUPPORTED' ? 'active' : ''}}" data-value="CITATION_UNSUPPORTED" bindtap="chooseReason">引用不支持</button>
+          <button class="{{feedbackReason === 'DID_NOT_ANSWER' ? 'active' : ''}}" data-value="DID_NOT_ANSWER" bindtap="chooseReason">没有回答问题</button>
+          <button class="{{feedbackReason === 'HARD_TO_UNDERSTAND' ? 'active' : ''}}" data-value="HARD_TO_UNDERSTAND" bindtap="chooseReason">难以理解</button>
+          <button class="{{feedbackReason === 'SAFETY_REFUSAL_INAPPROPRIATE' ? 'active' : ''}}" data-value="SAFETY_REFUSAL_INAPPROPRIATE" bindtap="chooseReason">安全拒答不合适</button>
+          <button class="{{feedbackReason === 'OTHER' ? 'active' : ''}}" data-value="OTHER" bindtap="chooseReason">其他</button>
+          <textarea wx:if="{{feedbackReason === 'OTHER'}}" value="{{feedbackComment}}" maxlength="200" adjust-position cursor-spacing="120" placeholder="请补充原因" bindinput="inputFeedbackComment" />
+        </view>
+        <view wx:if="{{feedbackError}}" class="feedback-error" aria-live="polite">{{feedbackError}}</view>
+        <view class="feedback-actions">
+          <button class="feedback-submit" loading="{{feedbackSaving}}" disabled="{{feedbackSaving || state === 'feedback-saved' || !feedback || (feedback === 'unhelpful' && (!feedbackReason || (feedbackReason === 'OTHER' && !feedbackComment)))}}" bindtap="submitFeedback">{{state === 'feedback-saved' ? '✓ 已提交' : '提交反馈'}}</button>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>
