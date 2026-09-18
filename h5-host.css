@@ -190,6 +190,35 @@ noscript {
   padding: 24px;
 }
 
+/* A bounded phone screen, with scrolling and fixed controls inside the device. */
+@media (min-width: 480px) {
+  .device-shell {
+    position: fixed !important;
+    top: 50%;
+    left: 50%;
+    width: 375px !important;
+    height: 812px !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    transform: translate(-50%, -50%) scale(var(--device-scale, 1)) !important;
+    contain: layout paint !important;
+    border-radius: 30px;
+    box-shadow: 0 0 0 1px #54606a, 0 0 0 8px #191e24, 0 28px 80px #0009;
+  }
+  #app {
+    width: 375px !important;
+    height: 812px !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    --yy-h5-fixed-inset: 0px;
+    --weapp-viewport-left: 0px;
+  }
+}
+@media (max-width: 479px) {
+  #app { width: 100% !important; max-width: none !important; }
+}
+
 /* Desktop context surrounds the unchanged mobile learning surface. */
 .portfolio-context{display:none;position:fixed;top:12vh;left:calc(50% - 560px);width:286px;color:#a8bbcb;font:15px/1.9 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
 .portfolio-wordmark{display:flex;align-items:center;gap:18px;color:#e7f0f8;text-decoration:none;font:600 25px/1.3 "Songti SC","STSong","SimSun",serif;letter-spacing:4px}.portfolio-wordmark span{color:#68899f;font:11px/1.5 monospace;letter-spacing:3px}.portfolio-kicker{margin-top:48px;font-size:12px;color:#75adbd;letter-spacing:1px}.portfolio-context h1{font:400 35px/1.5 "Songti SC","STSong","SimSun",serif;color:#e8f0f6;letter-spacing:1px;margin:15px 0 20px}.portfolio-context nav{display:flex;flex-direction:column;margin-top:28px}.portfolio-context nav a{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #243444;text-decoration:none;color:#b5cad9;font-size:14px}.portfolio-context nav a span:last-child{margin-left:auto;color:#66869b}.flow-dot{width:7px;height:7px;border-radius:50%;background:#4cbfd3}.class-dot{background:#d6a84b}.correction-dot{background:#e96b50}.review-dot{background:#3fb982}.portfolio-local-note{margin-top:28px!important;font-size:12px!important;color:#708ca0!important}.portfolio-context a:focus-visible{outline:2px solid #8dd3db;outline-offset:5px}.portfolio-context a:hover{color:#e5f8fc}@media(min-width:1200px){.portfolio-context{display:block}}
