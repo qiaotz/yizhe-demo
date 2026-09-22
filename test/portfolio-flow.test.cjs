@@ -173,6 +173,42 @@ test('exiting a guided step returns to overview once and preserves a resumable s
   assert.equal(tour.getState().surface, 'practice')
 })
 
+test('legacy tab URLs resolve directly to their demo stage before the old page hides', async () => {
+  const { portfolio, guide, tour } = await fixture()
+  for (const [path, stage] of [['/pages/learning/index', 'classroom'], ['/pages/question/index', 'practice'], ['/pages/wrong/index', 'correction']]) {
+    portfolio.activate('/pages/preview/index')
+    const next = portfolio.prepareNavigation(path)
+    assert.equal(next.url, guide.route(stage).url)
+    assert.equal(next.method, 'navigateTo')
+    assert.equal(tour.getState().surface, stage)
+  }
+})
+
+test('page hide/unload during manual browsing does not queue an explicit exit', async () => {
+  for (const route of ['/pages/preview/index', '/pages/preview/chapter', '/pkg-course/learning-check/index']) {
+    const { page, portfolio, guide, tour, context } = await fixture()
+    const current = page(route)
+    current.onLoad?.({})
+    current.onShow?.()
+    current.onHide?.()
+    current.onUnload?.()
+    assert.notEqual(context.__YIZHE_PORTFOLIO__.exitToOverview, true, route)
+    assert.equal(tour.getState().phase, 'demo')
+    const next = portfolio.prepareNavigation('/pages/learning/index')
+    assert.equal(next.url, guide.route('classroom').url, route)
+    assert.equal(tour.getState().surface, 'classroom')
+  }
+})
+
+test('persistent navigation groups every detail and excludes the intro screen', async () => {
+  const { stageForRoute, stages } = await import(pathToFileURL(path.join(ROOT, 'portfolio-navigation.js')).href)
+  assert.equal(stages.length, 5)
+  assert.equal(stageForRoute('#/pages/showcase/index'), '')
+  assert.equal(stageForRoute('#/pkg-question/wrong-retest/index?guide=1'), 'correction')
+  assert.equal(stageForRoute('#/pkg-course/learning-check/index?id=guide-preview'), 'preview')
+  for (const stage of stages) for (const route of stage.paths) assert.equal(stageForRoute('#' + route), stage.id)
+})
+
 test('the actual showcase offers resume after leaving an unfinished walkthrough', async () => {
   const { portfolio, guide, page } = await fixture()
   portfolio.activate(guide.route('classroom').url)

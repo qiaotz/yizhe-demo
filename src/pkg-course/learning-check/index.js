@@ -152,6 +152,7 @@ Page(require('../../services/portfolio-demo').wrapPage('/pkg-course/learning-che
   },
 
   finishAbandonedGuide() {
+    if (globalThis.__YIZHE_PORTFOLIO__) return
     if (!this.guideActive) return
     try {
       if (!onboardingGuide.isActive('previewCheck')) return

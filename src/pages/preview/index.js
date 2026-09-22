@@ -291,6 +291,8 @@ Page(require('../../services/portfolio-demo').wrapPage('/pages/preview/index', {
   },
 
   onHide() {
+    // Browsing between public demo stages is not an explicit exit.
+    if (globalThis.__YIZHE_PORTFOLIO__) return
     if (!this.guideActive) return
     try {
       if (onboardingGuide.isActive('preview')) onboardingGuide.exit('guide_exited')

@@ -27,7 +27,7 @@ function canonical(url) {
   const path = pathOf(url)
   if (path === HOME || path === '/pages/profile/index' || path === '/pages/auth/login') return HOME
   if (path === '/pkg-ai/query/index') return guide.route('classroom').url
-  if (TAB_TARGETS[path]) return path
+  if (TAB_TARGETS[path]) return guide.route(TAB_TARGETS[path]).url
   if (path === '/pages/onboarding/index') return '/pages/onboarding/index?complete=1'
   const stage = STAGES[path]
   return stage ? guide.route(stage).url : HOME
@@ -42,6 +42,7 @@ function activate(url) {
     guide.enter(stage)
     wx.setStorageSync(RESUME_KEY, stage)
   }
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('portfolio:route', { detail: route }))
   return route
 }
 

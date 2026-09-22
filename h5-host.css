@@ -168,6 +168,44 @@ body {
   background: #0a0f16 !important;
 }
 
+/* A separate navigation lane keeps stage switching visible without covering
+   task buttons, AI panels or the scrollable learning content. */
+.device-shell { --demo-nav-height: 0px; height: 100dvh; }
+.device-shell.has-stage-nav { --demo-nav-height: calc(62px + env(safe-area-inset-bottom, 0px)); }
+.device-screen {
+  height: calc(100% - var(--demo-nav-height));
+  position: relative;
+  contain: layout paint;
+  --yy-h5-fixed-inset: 0px;
+}
+.device-screen #app {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  --yy-h5-fixed-inset: 0px;
+  --weapp-viewport-left: 0px;
+}
+weapp-tab-bar { display: none !important; }
+.demo-stage-nav {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  height: var(--demo-nav-height);
+  box-sizing: border-box;
+  padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px));
+  background: #0d151e;
+  border-top: 1px solid #26333f;
+}
+.demo-stage-nav[hidden] { display: none; }
+.demo-stage-button {
+  border: 0; background: transparent; color: #92a1b1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; min-height: 44px; padding: 4px; border-radius: 9px;
+  font-family: inherit; font-size: 12px; line-height: 1.3; cursor: pointer;
+}
+.demo-stage-icon { width: 22px; height: 22px; }
+.demo-stage-button[aria-current] { background: #20303c; color: #edf7ff; }
+.demo-stage-button:focus-visible { outline: 2px solid #8dd3db; outline-offset: -2px; }
+
 #app {
   --weapp-tab-bar-inset: 0px !important;
   min-height: 100dvh;
