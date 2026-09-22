@@ -306,3 +306,33 @@ test('the local fixture keeps chapter, classroom, answer, correction and AI exam
   content.path.card.title = 'mutated by visitor'
   assert.equal(guide.demo().path.card.title, originalTitle, 'each consumer gets an independent fixture')
 })
+
+test('guide video pauses before skip, start and page exit without resetting skipped progress', async () => {
+  const { page, wx, portfolio, tour, navigations } = await fixture()
+  let pauses = 0
+  wx.createVideoContext = id => {
+    assert.equal(id, 'portfolio-intro-video')
+    return { pause() { pauses++ } }
+  }
+  const welcome = page('pages/showcase/index')
+  portfolio.start()
+  portfolio.open('classroom')
+  const progress = plain(tour.getState())
+  welcome.playIntro()
+  assert.equal(welcome.data.videoPlaying, true)
+  welcome.skip()
+  assert.equal(welcome.data.videoPlaying, false)
+  assert.match(navigations.at(-1).url, /pages\/preview\/index/)
+  assert.equal(tour.getState().phase, progress.phase)
+  welcome.playIntro()
+  welcome.onHide()
+  assert.equal(welcome.data.videoPlaying, false)
+  welcome.onVideoError()
+  assert.equal(welcome.data.videoError, true)
+  welcome.playIntro()
+  assert.equal(welcome.data.videoError, false)
+  welcome.start()
+  assert.equal(welcome.data.videoPlaying, false)
+  assert.match(navigations.at(-1).url, /pages\/preview\/index/)
+  assert.equal(pauses, 3)
+})

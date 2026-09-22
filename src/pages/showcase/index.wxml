@@ -1,42 +1,32 @@
-<view class="showcase">
-  <view class="showcase-masthead"><view class="brand-mark">医</view><text class="brand-name">医者</text><text class="demo-pill">交互演示</text></view>
-  <view class="showcase-hero">
-    <view class="eyebrow">医学学习 · 从理解到掌握</view>
-    <view class="showcase-title"><view>把理解，</view><view>变成会用。</view></view>
-    <view class="showcase-description">围绕一张知识卡，亲手走过预习、上课、做题、改错与复习。</view>
-    <view class="access-note"><view class="access-dot"/><text>免登录 · 无需邀请码</text></view>
-    <button class="primary-action" hover-class="action-pressed" bindtap="start" aria-label="开始完整学习演示"><view class="primary-layout"><text>开始完整体验</text><text>↗</text></view></button>
-    <button wx:if="{{canResume && !completed}}" class="resume-action" hover-class="action-pressed" bindtap="resume">继续上次体验 →</button>
-  </view>
-  <view class="journey-panel">
-    <view class="panel-label">这一轮，你会经历</view>
-    <view class="journey-steps">
-      <view class="journey-step preview"><text>预习</text><view/><text>发现盲点</text></view>
-      <view class="journey-step classroom"><text>上课</text><view/><text>理解知识</text></view>
-      <view class="journey-step practice"><text>做题</text><view/><text>检验运用</text></view>
-      <view class="journey-step correction"><text>改错</text><view/><text>找到原因</text></view>
-      <view class="journey-step review"><text>复习</text><view/><text>主动回忆</text></view>
+<view class="welcome-page">
+  <yy-nav theme="v3" title="首次体验" back="true"/>
+  <view class="welcome-content">
+    <view class="welcome-brand"><view class="welcome-dots"><view/><view/><view/><view/><view/></view><text>医者 · 学习体验</text></view>
+    <view class="welcome-title">把知识学懂，<view>也把它真正留下来</view></view>
+    <view class="welcome-subtitle">先了解我们的学习方法，再亲手走完这一轮。</view>
+    <view class="welcome-video-label"><text>引导视频</text><text>从这里开始</text></view>
+    <video wx:if="{{videoPlaying}}" id="portfolio-intro-video" class="welcome-video" src="{{introVideoSrc}}" poster="/images/guide/yizhe-guide-cover-v1.webp" controls="{{true}}" autoplay="{{true}}" show-fullscreen-btn="{{true}}" object-fit="contain" binderror="onVideoError"/>
+    <button wx:else class="welcome-video-cover" bindtap="playIntro" aria-label="播放医者 V5 引导视频，约 34 秒">
+      <image class="welcome-cover-image" src="/images/guide/yizhe-guide-cover-v1.webp" mode="aspectFit"/>
+      <view class="welcome-play">▶</view><text class="welcome-duration">00:34</text>
+    </button>
+    <view class="welcome-video-note">{{videoError ? '视频暂未加载成功，点击重试或直接开始体验。' : '点击播放 · 可随时跳过'}}</view>
+    <view class="welcome-version">V5 历史视频，部分界面与当前演示不同。</view>
+    <view class="welcome-journey">
+      <view class="welcome-journey-head"><view><view class="welcome-journey-title">一轮完整学习</view><text>从找到重点，到验证掌握</text></view><text class="welcome-badge">跟着做一遍</text></view>
+      <view class="welcome-steps"><view class="step-preview"><view/><text>预习</text></view><view class="step-class"><view/><text>上课</text></view><view class="step-practice"><view/><text>做题</text></view><view class="step-correction"><view/><text>改错</text></view><view class="step-review"><view/><text>复习</text></view></view>
+      <view class="welcome-journey-copy">沿着“预习—上课—做题—改错—复习”，把理解变成能够独立运用的知识。</view>
     </view>
-    <view class="sample-topic"><text>本次示例</text><text>第一心音强度的判断规律</text></view>
+    <view class="welcome-safe">✓ 放心体验：不计入正式学习记录，也不消耗 AI 额度</view>
+    <view class="welcome-example">免登录 · 精选示例 · AI 回答为预置内容</view>
+    <button class="welcome-more" bindtap="toggleDetails">{{showDetails ? '收起更多选项 −' : '更多体验选项 ＋'}}</button>
+    <view wx:if="{{showDetails}}" class="welcome-explore">
+      <button bindtap="openClassroom">知识课堂 →</button>
+      <button bindtap="openCorrection">AI 错因归因 →</button>
+      <button bindtap="openReview">主动回忆 →</button>
+      <button bindtap="reset">重置本地体验进度</button>
+    </view>
+    <button wx:if="{{canResume && !completed}}" class="welcome-resume" bindtap="resume">继续上次体验 →</button>
   </view>
-  <view class="highlights">
-    <view class="section-heading"><text>也可以从这里开始</text><text>自由探索</text></view>
-    <button class="feature-entry correction-entry" hover-class="entry-pressed" bindtap="openCorrection"><view class="entry-layout">
-      <view class="entry-symbol">↳</view><view class="entry-copy"><text>AI 错因归因</text><text>选择错因，核对并修改复盘建议</text></view><text class="entry-arrow">→</text>
-    </view></button>
-    <button class="feature-entry classroom-entry" hover-class="entry-pressed" bindtap="openClassroom"><view class="entry-layout">
-      <view class="entry-symbol">≋</view><view class="entry-copy"><text>知识课堂</text><text>结构化知识卡与局部 AI 解析</text></view><text class="entry-arrow">→</text>
-    </view></button>
-    <button class="feature-entry review-entry" hover-class="entry-pressed" bindtap="openReview"><view class="entry-layout">
-      <view class="entry-symbol">↺</view><view class="entry-copy"><text>主动回忆</text><text>先独立回忆，再揭晓答案</text></view><text class="entry-arrow">→</text>
-    </view></button>
-  </view>
-  <view class="demo-explanation"><view class="note-title">关于这次体验</view><text>使用精选示例内容与预先准备的 AI 回答。进度只保存在当前浏览器，可随时重置。</text></view>
-  <button class="details-toggle" bindtap="toggleDetails" aria-expanded="{{showDetails}}">项目说明 <text>{{showDetails ? '−' : '+'}}</text></button>
-  <view wx:if="{{showDetails}}" class="project-details">
-    <view><text>真实页面，完整链路</text><text>演示复用医者现有 H5 的知识卡、微测、答题、改错与复习页面。</text></view>
-    <view><text>AI 辅助，用户确认</text><text>归因建议可以编辑，确认后进入复测；演示中的 AI 回答均为预置示例。</text></view>
-    <view><text>独立的演示环境</text><text>无需注册，不读取内测账号，也不提交正式学习记录。</text></view>
-  </view>
-  <view class="showcase-footer"><text>医者 · 学习产品作品展示</text><button bindtap="reset" aria-label="清除本浏览器的演示进度">重置演示</button></view>
+  <view class="welcome-actions"><button class="welcome-start" bindtap="start">开始体验</button><button class="welcome-skip" bindtap="skip">跳过介绍，进入预习</button></view>
 </view>

@@ -31,13 +31,14 @@ const cloud = new Proxy(Object.freeze({ init() {} }), {
 globalThis.__YIZHE_PORTFOLIO_RUNTIME_BASE__ = globalThis.location?.pathname.replace(/(?:index\.html)?$/, '').replace(/\/$/, '') || '/'
 globalThis.__YANYIZHI_H5__ = Object.freeze({
   base: globalThis.__YIZHE_PORTFOLIO_RUNTIME_BASE__, releaseId: 'portfolio-v1',
-  mediaEnabled: false, guideVideoEnabled: false, portfolioDemo: true,
+  mediaEnabled: false, guideVideoEnabled: true, portfolioDemo: true,
 })
 const wx = Object.assign({}, globalThis.wx, runtime, storage.api, adapters, {
   cloud,
   getRecorderManager: () => media,
   createInnerAudioContext: () => media,
-  createVideoContext: () => media,
+  // Only the packaged public introduction has a controllable video context.
+  createVideoContext: (id, context) => id === 'portfolio-intro-video' ? runtime.createVideoContext(id, context) : media,
   getFileSystemManager: () => new Proxy({}, { get: (_target, name) => disabledOperation(`fileSystem.${String(name)}`) }),
   base64ToArrayBuffer(value) {
     const binary = atob(String(value || ''))

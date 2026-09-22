@@ -14,7 +14,7 @@ async function walk(directory) {
 await walk(root)
 const html = await readFile(path.join(root, 'index.html'), 'utf8')
 assert.match(html, /connect-src 'none'/, 'Static demo must reject all API connections')
-assert.match(html, /media-src 'none'/, 'Static demo must reject remote media')
+assert.match(html, /media-src 'self';/, 'Only the packaged, same-origin guide video is permitted')
 if (!process.env.DEMO_BASE || process.env.DEMO_BASE === './') {
   assert.doesNotMatch(html, /(?:src|href)="\/(?!\/)/, 'Built entry assets must be relative')
 }
@@ -38,4 +38,7 @@ for (const file of files.filter(file => /\.(?:js|css|html|json)$/.test(file))) {
   for (const pattern of forbidden) assert.doesNotMatch(content, pattern, `Forbidden private configuration in ${path.relative(root, file)}`)
 }
 const bytes = (await Promise.all(files.map(file => stat(file)))).reduce((sum, info) => sum + info.size, 0)
-console.log(`Static demo verified: ${files.length} files, ${(bytes / 1024 / 1024).toFixed(2)} MiB; API and media denied; entry ${scriptNames.join(', ')}.`)
+for (const media of ['yizhe-guide-v5.mp4', 'yizhe-guide-cover-v1.webp']) {
+  assert.ok(files.includes(path.join(root, 'images', 'guide', media)), `Missing guide asset: ${media}`)
+}
+console.log(`Static demo verified: ${files.length} files, ${(bytes / 1024 / 1024).toFixed(2)} MiB; API denied, media same-origin only; entry ${scriptNames.join(', ')}.`)
